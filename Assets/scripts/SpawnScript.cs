@@ -5,14 +5,37 @@ using UnityEngine;
 [System.Serializable]
 public class WaveBuilder
 {
-    public float id;
+    public Transform Target;
     public List<GameObject> waveObj = new List<GameObject>();
+    public BoxCollider2D waveZone;
+    GameObject temp;
+    public void WaveBuilderSpawn()
+    {
+        //instantiate game objects at random point in the collider
+        //assign collider to enemy script
+
+        Vector3 randoV = new Vector3(Random.Range(waveZone.bounds.min.x, waveZone.bounds.max.x), Random.Range(waveZone.bounds.min.y, waveZone.bounds.max.y), 0);
+        for(int i=0; i< waveObj.Count; i++)
+        {
+            temp = GameObject.Instantiate(waveObj[i], randoV, Quaternion.identity) as GameObject;
+            temp.GetComponent<BaddieScript>().moveZone = waveZone;
+            if(temp.GetComponent<BaddieScript>().myType == MoveType.backForth)
+            {
+                temp.GetComponent<BaddieScript>().destPos = Target.position ;
+            }
+        }
+      
+
+    }
+    
+
+    
         
 }
 
 public class SpawnScript : MonoBehaviour {
 
-
+    public int waveCounter;
     public List<GameObject> myObj = new List<GameObject>();
     public List<WaveBuilder> myWaves = new List<WaveBuilder>();
     public Vector3 destPos;
@@ -24,6 +47,7 @@ public class SpawnScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         tick = 0;
+        waveCounter = 0;
 	}
 	
 	// Update is called once per frame
@@ -35,7 +59,8 @@ public class SpawnScript : MonoBehaviour {
                 tick += 1 * Time.deltaTime;
             }else
             {
-                Spawn();
+               // Spawn();
+                SpawnWave();
                 tick = 0;
             }
         }
@@ -46,5 +71,16 @@ public class SpawnScript : MonoBehaviour {
     {
         tempSpawn = (GameObject)Instantiate(myObj[1], transform.position, Quaternion.identity);
         tempSpawn.GetComponent<BaddieScript>().destPos = destPos;
+    }
+
+
+    void SpawnWave()
+    {
+        Debug.Log("poot");
+        if(waveCounter < myWaves.Count)
+        {
+            myWaves[waveCounter].WaveBuilderSpawn();
+            waveCounter++;
+        }        
     }
 }

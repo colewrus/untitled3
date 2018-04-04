@@ -107,7 +107,7 @@ public class PlayerScript : MonoBehaviour {
             {
                 //this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
                 GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-                Invoke("DownThrough", 0.5f);          
+                Invoke("DownThrough", 0.25f);          
             }
         }
     }
@@ -133,7 +133,7 @@ public class PlayerScript : MonoBehaviour {
             rb.gravityScale = 0;
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                rb.velocity = transform.up * 0.5f;
+                rb.velocity = transform.up * 0.75f;
             }
             if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
@@ -141,7 +141,7 @@ public class PlayerScript : MonoBehaviour {
             }
             if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
             {
-                rb.velocity = transform.up * -0.5f;
+                rb.velocity = transform.up * -0.75f;
             }
             if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
             {

@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4474573759778910}
   - component: {fileID: 212029406123327230}
   - component: {fileID: 61329235205664642}
+  - component: {fileID: 114923005273662528}
   m_Layer: 0
   m_Name: skull
   m_TagString: enemies
@@ -66,6 +67,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.17, y: 0.12}
   m_EdgeRadius: 0
+--- !u!114 &114923005273662528
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1868885514252434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b08bea1974554849be08ff0981c7f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 0
+  startPos: {x: 0, y: 0, z: 0}
+  destPos: {x: 0, y: 0, z: 0}
+  moveBack: 0
+  moveZone: {fileID: 0}
+  timer: 4
+  speed: 3
 --- !u!212 &212029406123327230
 SpriteRenderer:
   m_ObjectHideFlags: 1
