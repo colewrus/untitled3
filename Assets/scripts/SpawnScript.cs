@@ -23,6 +23,8 @@ public class WaveBuilder
             {
                 temp.GetComponent<BaddieScript>().destPos = Target.position ;
             }
+            GM.instance.AddEnemy();
+            PlayerScript.instance.enemyCollider.Add(temp.GetComponent<BoxCollider2D>());
         }
       
 
@@ -80,6 +82,7 @@ public class SpawnScript : MonoBehaviour {
         if(waveCounter < myWaves.Count)
         {
             myWaves[waveCounter].WaveBuilderSpawn();
+            GM.instance.AddEnemy();
             waveCounter++;
         }        
     }

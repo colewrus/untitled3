@@ -307,6 +307,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\scripts\BaddieScript.cs" />
+    <Compile Include="Assets\scripts\GM.cs" />
     <Compile Include="Assets\scripts\PlayerScript.cs" />
     <Compile Include="Assets\scripts\SpawnScript.cs" />
   </ItemGroup>

@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour {
 
+    public static PlayerScript instance = null;
     public float speed;
     public float jumpPower;
 
     public GameObject aimReticule;
     Collider2D aimCollider;
-    List<Collider2D> enemyCollider = new List<Collider2D>();
+    public List<Collider2D> enemyCollider = new List<Collider2D>();
     bool aimOverlap;
 
     public bool onPlatform, onLadder;
@@ -23,13 +24,25 @@ public class PlayerScript : MonoBehaviour {
     public float gunRange;
     public ParticleSystem part;
 
-	// Use this for initialization
-	void Start () {
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    // Use this for initialization
+    void Start () {
         rb = this.GetComponent<Rigidbody2D>();
         aimCollider = aimReticule.GetComponent<Collider2D>();
         foreach(GameObject obj in GameObject.FindGameObjectsWithTag("enemies"))
         {
-            enemyCollider.Add(obj.GetComponent<Collider2D>());
+            if (obj)
+            {
+                enemyCollider.Add(obj.GetComponent<Collider2D>());
+            }                
+            else
+            {
+                break;
+            }
         }
        
 	}
@@ -48,18 +61,18 @@ public class PlayerScript : MonoBehaviour {
     void Reticule()
     {
         aimReticule.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 10);
-        for(int i=0; i < enemyCollider.Count; i++)
+
+
+        for (int i=0; i < enemyCollider.Count; i++)
         {
             if (aimCollider.bounds.Intersects(enemyCollider[i].bounds))
             {
                 Color tmp = new Color(255, 0, 0);
-                aimReticule.GetComponent<SpriteRenderer>().color = tmp;
-                Debug.Log(enemyCollider[i].name);
+                aimReticule.GetComponent<SpriteRenderer>().color = tmp;                
             }else
             {
                 Color tmp = new Color(255,255,255);
                 aimReticule.GetComponent<SpriteRenderer>().color = tmp;
-
             }
         }
     }
@@ -80,6 +93,12 @@ public class PlayerScript : MonoBehaviour {
             part.transform.position = hit2d.point;
             part.Play();
             Debug.Log(hit2d.point);
+            if(hit2d.collider.transform.tag == "enemies")
+            {
+                enemyCollider.Remove(hit2d.collider);
+                Destroy(hit2d.collider.gameObject);
+                GM.instance.RemoveEnemy();
+            }
         }
 
         Ray myRay = new Ray(transform.position, destinationActual*gunRange);
