@@ -78,11 +78,10 @@ public class SpawnScript : MonoBehaviour {
 
     void SpawnWave()
     {
-        Debug.Log("poot");
+        
         if(waveCounter < myWaves.Count)
         {
             myWaves[waveCounter].WaveBuilderSpawn();
-            GM.instance.AddEnemy();
             waveCounter++;
         }        
     }

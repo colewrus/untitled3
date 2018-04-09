@@ -9,12 +9,20 @@ public class GM : MonoBehaviour {
     public int enemyCount;
     public Text t_enemyCount;
 
+    AudioSource mainSource;
+
+    public List<AudioClip> clips = new List<AudioClip>();
+
     public float timer;
     float tick;
 
     private void Awake()
     {
         instance = this;
+        mainSource = this.GetComponent<AudioSource>();
+        mainSource.clip = clips[0];
+        mainSource.Play();
+        mainSource.loop = true;
     }
 
 
@@ -45,8 +53,10 @@ public class GM : MonoBehaviour {
 
     public void AddEnemy()
     {
+        Debug.Log("add");
         enemyCount++;
         t_enemyCount.text = "x" + enemyCount;
+        return;
     }
 
     public void RemoveEnemy()

@@ -92,7 +92,7 @@ public class PlayerScript : MonoBehaviour {
         {
             part.transform.position = hit2d.point;
             part.Play();
-            Debug.Log(hit2d.point);
+            
             if(hit2d.collider.transform.tag == "enemies")
             {
                 enemyCollider.Remove(hit2d.collider);
@@ -120,20 +120,20 @@ public class PlayerScript : MonoBehaviour {
             rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKey(KeyCode.S))
         {
             if (onPlatform)
             {
                 //this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
                 GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-                Invoke("DownThrough", 0.25f);          
+                Invoke("DownThrough", 0.21f);          
             }
         }
     }
 
     void DownThrough()
     {
-        Debug.Log("invoked");
+       
         GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
     }
 
@@ -152,7 +152,7 @@ public class PlayerScript : MonoBehaviour {
             rb.gravityScale = 0;
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                rb.velocity = transform.up * 0.75f;
+                rb.velocity = transform.up * 1.25f;
             }
             if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
@@ -160,7 +160,7 @@ public class PlayerScript : MonoBehaviour {
             }
             if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
             {
-                rb.velocity = transform.up * -0.75f;
+                rb.velocity = transform.up * 1.25f;
             }
             if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
             {
