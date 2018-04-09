@@ -116,8 +116,8 @@ public class PlayerScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            
-            rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            if(!onLadder)
+                rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
         }
 
         if (Input.GetKey(KeyCode.S))
@@ -150,9 +150,10 @@ public class PlayerScript : MonoBehaviour {
         if (onLadder)
         {
             rb.gravityScale = 0;
+          
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                rb.velocity = transform.up * 1.25f;
+                rb.velocity = transform.up * 1.75f;
             }
             if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
@@ -160,7 +161,7 @@ public class PlayerScript : MonoBehaviour {
             }
             if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
             {
-                rb.velocity = transform.up * 1.25f;
+                rb.velocity = transform.up * -1.75f;
             }
             if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
             {
@@ -185,6 +186,7 @@ public class PlayerScript : MonoBehaviour {
         if(collision.transform.tag == "ladders")
         {
             onLadder = true;
+            rb.velocity = Vector3.zero;
         }
     }
 
