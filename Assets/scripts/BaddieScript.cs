@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MoveType{backForth, random};
+public enum MoveType{backForth, random, bat, skull, blob};
 
 public class BaddieScript : MonoBehaviour {
 
@@ -22,6 +22,9 @@ public class BaddieScript : MonoBehaviour {
     float journeyLength;
     float tick;
 
+
+    public GameObject bullet;
+
     private void Awake()
     {
         startPos = this.transform.position;
@@ -35,7 +38,7 @@ public class BaddieScript : MonoBehaviour {
         moveBack = false;
         actualDest = destPos;
         startTime = Time.time;
-		Debug.Log (moveZone.bounds.min + ", " + moveZone.bounds.max);
+		
 		if (myType == MoveType.random) {
 			destPos = new Vector3 (Random.Range (moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range (moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
 		}
@@ -49,8 +52,7 @@ public class BaddieScript : MonoBehaviour {
 	
 		RaycastHit2D rayHit = Physics2D.Raycast (transform.position, new Vector3 (1, 0, 0) * 0.5f);
 
-		if (rayHit.collider != null) {
-			//Debug.Log (rayHit.collider.name);
+		if (rayHit.collider != null) {			
 		}
 		//Up
 		Debug.DrawRay (transform.position, new Vector3 (0, 1, 0) * 1.5f, Color.red);
@@ -72,8 +74,8 @@ public class BaddieScript : MonoBehaviour {
         {
             tick += Time.deltaTime;
         }else
-        {			
-
+        {
+            StartCoroutine("SkullFire");
 		
 			if (myType == MoveType.random) {				
 				destPos = new Vector3 (Random.Range (moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range (moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
@@ -102,4 +104,17 @@ public class BaddieScript : MonoBehaviour {
         transform.position = Vector3.Lerp(transform.position, actualDest, speed*Time.deltaTime);
 
       }
+
+
+    IEnumerator SkullFire()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log("should spawn");
+        GameObject temp = (GameObject)Instantiate(bullet, transform.position, Quaternion.identity);
+
+        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(7, -7);
+        //add velocity to the bullet
+
+
+    }
 }
