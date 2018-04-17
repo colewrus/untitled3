@@ -24,7 +24,7 @@ public class BaddieScript : MonoBehaviour {
 
 
     public GameObject bullet;
-
+    public float BulletSpeed;
     private void Awake()
     {
         startPos = this.transform.position;
@@ -109,10 +109,14 @@ public class BaddieScript : MonoBehaviour {
     IEnumerator SkullFire()
     {
         yield return new WaitForSeconds(0.5f);
-        Debug.Log("should spawn");
+       
+        Vector3 target = PlayerScript.instance.transform.position - transform.position;
         GameObject temp = (GameObject)Instantiate(bullet, transform.position, Quaternion.identity);
-
-        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(7, -7);
+        Debug.Log("Target: " + target);
+        float tX = Mathf.Clamp(target.x * 50, -BulletSpeed, BulletSpeed);
+        float tY = Mathf.Clamp(target.y * 50, -BulletSpeed, BulletSpeed);
+        Debug.Log("FinalPoints: " + tX + " " + tY);
+        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(tX, tY);
         //add velocity to the bullet
 
 
