@@ -116,8 +116,12 @@ public class PlayerScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(!onLadder)
+            if (!onLadder)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, 0);
                 rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            }
+                
         }
 
         if (Input.GetKey(KeyCode.S))

@@ -32,13 +32,14 @@ public class BaddieScript : MonoBehaviour {
         actualDest = destPos;
         startTime = Time.time;
     }
+
     // Use this for initialization
     void Start () {
         startPos = this.transform.position;
         moveBack = false;
         actualDest = destPos;
         startTime = Time.time;
-		
+        Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());       
 		if (myType == MoveType.random) {
 			destPos = new Vector3 (Random.Range (moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range (moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
 		}
@@ -96,8 +97,8 @@ public class BaddieScript : MonoBehaviour {
 					moveBack = false;
 				}
 			}
-
             tick = 0;
+
         }
         distCovered = (Time.time - startTime) * speed;
         fracJourney = distCovered / journeyLength;
@@ -109,16 +110,21 @@ public class BaddieScript : MonoBehaviour {
     IEnumerator SkullFire()
     {
         yield return new WaitForSeconds(0.5f);
-       
-        Vector3 target = PlayerScript.instance.transform.position - transform.position;
-        GameObject temp = (GameObject)Instantiate(bullet, transform.position, Quaternion.identity);
-        Debug.Log("Target: " + target);
-        float tX = Mathf.Clamp(target.x * 50, -BulletSpeed, BulletSpeed);
-        float tY = Mathf.Clamp(target.y * 50, -BulletSpeed, BulletSpeed);
-        Debug.Log("FinalPoints: " + tX + " " + tY);
-        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(tX, tY);
-        //add velocity to the bullet
 
+        GameObject bull = GM.instance.GetBullets();
+        if(bull != null)
+        {
+            Vector3 target = PlayerScript.instance.transform.position - transform.position;
+
+
+            // bull.GetComponent<Rigidbody2D>().velocity = target.normalized * speed;
+            bull.transform.position = this.transform.position;
+            bull.GetComponent<BulletScript>().target = target;
+            bull.GetComponent<BulletScript>().speed = BulletSpeed;
+
+            bull.SetActive(true);
+        }
+      
 
     }
 }

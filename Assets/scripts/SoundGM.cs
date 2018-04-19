@@ -10,15 +10,13 @@ public class SoundGM : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         mySource = this.GetComponent<AudioSource>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+	}	
+
+
 
     public void playSound(AudioClip clip)
     {
-        AudioSource.
+        mySource.clip = clip;
+        mySource.Play();
     }
 }

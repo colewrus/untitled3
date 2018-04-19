@@ -16,6 +16,10 @@ public class GM : MonoBehaviour {
     public float timer;
     float tick;
 
+    public List<GameObject> BulletPool = new List<GameObject>();
+    public GameObject bullet;
+    public int poolCount;
+
     private void Awake()
     {
         instance = this;
@@ -32,12 +36,26 @@ public class GM : MonoBehaviour {
         enemyCount = GameObject.FindGameObjectsWithTag("enemies").Length;
 
         t_enemyCount.text = "x" + enemyCount;
+
+        for(int i=0; i<poolCount; i++)
+        {
+            GameObject obj = (GameObject)Instantiate(bullet);
+            obj.SetActive(false);
+            BulletPool.Add(obj);
+        }
     }
 	
-	// Update is called once per frame
-	void Update () {
-        
-	}
+    public GameObject GetBullets()
+    {
+        for(int i= 0; i < BulletPool.Count; i++)
+        {
+            if (!BulletPool[i].activeInHierarchy)
+            {
+                return BulletPool[i];
+            }
+        }
+        return null;
+    }
 
     void Watch()
     {
