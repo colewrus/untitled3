@@ -13,13 +13,13 @@ public class BulletScript : MonoBehaviour {
 	void Start () {
     
 	}
-
+    /*
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = target.normalized * speed;
     }
-
+    */
 
     private void OnTriggerExit2D(Collider2D collision)
     {

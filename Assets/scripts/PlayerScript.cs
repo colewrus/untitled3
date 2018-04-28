@@ -24,6 +24,19 @@ public class PlayerScript : MonoBehaviour {
     public float gunRange;
     public ParticleSystem part;
 
+    public LayerMask viableLayers;
+    public List<AudioClip> EffectsClips = new List<AudioClip>();
+    AudioSource myAudio;
+
+    public List<GameObject> bullets = new List<GameObject>();
+    public float bulletCount;
+    public float shotDelay;
+    public float ReloadTimer;
+    GameObject currentPlatform;
+
+    public Color redColor;
+    public Color baseColor;
+
     private void Awake()
     {
         instance = this;
@@ -33,6 +46,7 @@ public class PlayerScript : MonoBehaviour {
     void Start () {
         rb = this.GetComponent<Rigidbody2D>();
         aimCollider = aimReticule.GetComponent<Collider2D>();
+        bulletCount = 6;       
         foreach(GameObject obj in GameObject.FindGameObjectsWithTag("enemies"))
         {
             if (obj)
@@ -44,7 +58,7 @@ public class PlayerScript : MonoBehaviour {
                 break;
             }
         }
-       
+        myAudio = GetComponent<AudioSource>();       
 	}
 	
 	// Update is called once per frame
@@ -52,7 +66,25 @@ public class PlayerScript : MonoBehaviour {
         PlayerMove();
         if (Input.GetMouseButtonDown(0))
         {
-            Shoot();
+            if (bulletCount <= 0)
+            {
+                return;
+            }
+            if (bulletCount > 1)
+            {
+                Shoot();
+                StopCoroutine("c_Reload");
+            }else
+            {              
+                Shoot();
+                StartCoroutine("c_Reload");
+            }           
+ 
+        }
+
+        if(bulletCount > 6)
+        {
+            bulletCount = 6;
         }
         LadderMovement();
         Reticule();
@@ -77,6 +109,15 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
+    IEnumerator c_Reload()
+    {
+        while(bulletCount < 6){
+            yield return new WaitForSeconds(ReloadTimer);
+            bulletCount++;
+            bullets[Mathf.FloorToInt(bulletCount)-1].SetActive(true);            
+        }
+    }
+
     void Shoot()
     {
 
@@ -86,7 +127,7 @@ public class PlayerScript : MonoBehaviour {
               
         Vector2 destinationActual = rayDest - new Vector2(transform.position.x, transform.position.y);
 
-        hit2d = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y), destinationActual * gunRange);
+        hit2d = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y), destinationActual, gunRange, viableLayers);
 
         if(hit2d.collider != null)
         {
@@ -104,7 +145,11 @@ public class PlayerScript : MonoBehaviour {
         Ray myRay = new Ray(transform.position, destinationActual*gunRange);
         Physics2D.Raycast(transform.position, destinationActual, gunRange);  
         Debug.DrawRay(transform.position, destinationActual*gunRange, Color.cyan);
+        myAudio.clip = EffectsClips[0];
+        myAudio.Play();
+        bulletCount--;
         
+        bullets[Mathf.FloorToInt(bulletCount)].SetActive(false);
     }
 
     void PlayerMove()
@@ -128,17 +173,20 @@ public class PlayerScript : MonoBehaviour {
         {
             if (onPlatform)
             {
-                //this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-                GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-                Invoke("DownThrough", 0.21f);          
+
+                this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
+                //GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
+                //currentPlatform.GetComponent<Collider2D>().isTrigger = true;
+                Invoke("DownThrough", 0.41f);          
             }
         }
     }
 
     void DownThrough()
     {
-       
+
         GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -177,11 +225,15 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
+  
+
     private void OnCollisionExit2D(Collision2D collision)
     {
         if(collision.transform.tag == "platform")
         {
-            onPlatform = false;           
+            
+            onPlatform = false;
+            
         }
     }
 
@@ -189,9 +241,35 @@ public class PlayerScript : MonoBehaviour {
     {
         if(collision.transform.tag == "ladders")
         {
-            onLadder = true;
-            rb.velocity = Vector3.zero;
+           
+                onLadder = true;
+                rb.velocity = Vector3.zero;
+            
+           
         }
+
+
+
+        if(collision.transform.parent != null)
+        {
+            if(collision.transform.parent.tag == "enemies")
+                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true;
+                if(collision.transform.name == "triggerDetection")
+                {
+                StartCoroutine("DamageFlash");
+                }
+        }
+    }
+
+    IEnumerator DamageFlash()
+    {
+        GetComponent<SpriteRenderer>().color = redColor;
+        yield return new WaitForSeconds(0.2f);
+        GetComponent<SpriteRenderer>().color = baseColor;
+        yield return new WaitForSeconds(0.2f);
+        GetComponent<SpriteRenderer>().color = redColor;
+        yield return new WaitForSeconds(0.2f);
+        GetComponent<SpriteRenderer>().color = baseColor;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -199,6 +277,12 @@ public class PlayerScript : MonoBehaviour {
         if(collision.transform.tag == "ladders")
         {
             onLadder = false;            
+        }
+
+        if (collision.transform.parent != null)
+        {
+            if (collision.transform.parent.tag == "enemies")
+                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = false;
         }
     }
 }

@@ -16,6 +16,8 @@ public class GM : MonoBehaviour {
     public float timer;
     float tick;
 
+    public List<GameObject> Spawners = new List<GameObject>();
+
     public List<GameObject> BulletPool = new List<GameObject>();
     public GameObject bullet;
     public int poolCount;
@@ -70,8 +72,7 @@ public class GM : MonoBehaviour {
     }
 
     public void AddEnemy()
-    {
-        Debug.Log("add");
+    {        
         enemyCount++;
         t_enemyCount.text = "x" + enemyCount;
         return;
