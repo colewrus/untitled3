@@ -26,6 +26,7 @@ public class PlayerScript : MonoBehaviour {
 
     public LayerMask viableLayers;
     public List<AudioClip> EffectsClips = new List<AudioClip>();
+    public List<AudioClip> WalkingClips = new List<AudioClip>();
     AudioSource myAudio;
 
     public List<GameObject> bullets = new List<GameObject>();
@@ -36,6 +37,8 @@ public class PlayerScript : MonoBehaviour {
 
     public Color redColor;
     public Color baseColor;
+
+    public AudioSource walkingSource;
 
     private void Awake()
     {
@@ -58,11 +61,13 @@ public class PlayerScript : MonoBehaviour {
                 break;
             }
         }
+        walkingSource.clip = WalkingClips[0];
         myAudio = GetComponent<AudioSource>();       
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        
         PlayerMove();
         if (Input.GetMouseButtonDown(0))
         {
@@ -111,11 +116,20 @@ public class PlayerScript : MonoBehaviour {
 
     IEnumerator c_Reload()
     {
-        while(bulletCount < 6){
+        while (bulletCount < 6)
+        {
             yield return new WaitForSeconds(ReloadTimer);
             bulletCount++;
-            bullets[Mathf.FloorToInt(bulletCount)-1].SetActive(true);            
+            myAudio.PlayOneShot(EffectsClips[2]);
+            bullets[Mathf.FloorToInt(bulletCount) - 1].SetActive(true);
+            if (bulletCount == 6)
+            {
+                myAudio.PlayOneShot(EffectsClips[3]);
+                yield return new WaitForSeconds(EffectsClips[3].length);
+                myAudio.PlayOneShot(EffectsClips[4], 1.0f);
+            }
         }
+        
     }
 
     void Shoot()
@@ -145,8 +159,8 @@ public class PlayerScript : MonoBehaviour {
         Ray myRay = new Ray(transform.position, destinationActual*gunRange);
         Physics2D.Raycast(transform.position, destinationActual, gunRange);  
         Debug.DrawRay(transform.position, destinationActual*gunRange, Color.cyan);
-        myAudio.clip = EffectsClips[0];
-        myAudio.Play();
+       
+        myAudio.PlayOneShot(EffectsClips[0], 0.8f);
         bulletCount--;
         
         bullets[Mathf.FloorToInt(bulletCount)].SetActive(false);
@@ -157,7 +171,12 @@ public class PlayerScript : MonoBehaviour {
         horiz = Input.GetAxis("Horizontal");   
 
         rb.velocity = new Vector3(horiz * speed, Mathf.Clamp(rb.velocity.y, -10, 10));
-
+        if(rb.velocity.y == 0 && rb.velocity.x != 0 && !walkingSource.isPlaying)
+        {
+            walkingSource.volume = Random.Range(0.1f, 0.25f);
+            walkingSource.pitch = Random.Range(0.6f, 1.1f);
+            walkingSource.Play();
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -205,7 +224,7 @@ public class PlayerScript : MonoBehaviour {
           
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                rb.velocity = transform.up * 1.75f;
+                rb.velocity = transform.up * 2.75f;
             }
             if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
@@ -213,7 +232,7 @@ public class PlayerScript : MonoBehaviour {
             }
             if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
             {
-                rb.velocity = transform.up * -1.75f;
+                rb.velocity = transform.up * -2.75f;
             }
             if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
             {
