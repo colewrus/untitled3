@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/arena.unity
+- path: Assets/paddle.unity
   isLoaded: 1
   isActive: 1
