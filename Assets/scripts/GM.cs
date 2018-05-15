@@ -9,9 +9,10 @@ public class GM : MonoBehaviour {
     public int enemyCount;
     public Text t_enemyCount;
 
-    AudioSource mainSource;
+    public AudioSource mainSource;
 
     public List<AudioClip> clips = new List<AudioClip>();
+    public List<AudioClip> fxClips = new List<AudioClip>();
 
     public float timer;
     float tick;
@@ -35,7 +36,7 @@ public class GM : MonoBehaviour {
     // Use this for initialization
     void Start () {
         timer = 0;
-        enemyCount = GameObject.FindGameObjectsWithTag("enemies").Length;
+        enemyCount = GameObject.FindGameObjectsWithTag("enemies").Length-1;
 
         t_enemyCount.text = "x" + enemyCount;
 

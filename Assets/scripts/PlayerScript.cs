@@ -40,6 +40,12 @@ public class PlayerScript : MonoBehaviour {
 
     public AudioSource walkingSource;
 
+    ContactFilter2D contactFilter;
+    Collider2D[] colliders;
+    Collider2D myCollider;
+
+    float jumpCount;
+
     private void Awake()
     {
         instance = this;
@@ -47,6 +53,8 @@ public class PlayerScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+        jumpCount = 0;
         rb = this.GetComponent<Rigidbody2D>();
         aimCollider = aimReticule.GetComponent<Collider2D>();
         bulletCount = 6;       
@@ -67,7 +75,14 @@ public class PlayerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
+        RaycastHit2D hit_S = Physics2D.Raycast(transform.position, new Vector3(0, -0.75f, 0));
+        Debug.DrawRay(transform.position, new Vector3(0, -0.75f, 0), Color.red);
+        if(hit_S.collider.name == "floors")
+        {           
+            GetComponent<CapsuleCollider2D>().enabled = true;
+        }
+
+
         PlayerMove();
         if (Input.GetMouseButtonDown(0))
         {
@@ -85,6 +100,11 @@ public class PlayerScript : MonoBehaviour {
                 StartCoroutine("c_Reload");
             }           
  
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            StartCoroutine("c_Reload");
         }
 
         if(bulletCount > 6)
@@ -182,8 +202,14 @@ public class PlayerScript : MonoBehaviour {
         {
             if (!onLadder)
             {
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-                rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+                
+                if(jumpCount < 2)
+                {
+                    rb.velocity = new Vector2(rb.velocity.x, 0);
+                    rb.AddForce(Vector2.up * (jumpPower + jumpCount), ForceMode2D.Impulse);
+                    jumpCount++;
+                }
+                
             }
                 
         }
@@ -196,23 +222,31 @@ public class PlayerScript : MonoBehaviour {
                 this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
                 //GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
                 //currentPlatform.GetComponent<Collider2D>().isTrigger = true;
-                Invoke("DownThrough", 0.41f);          
+                Invoke("DownThrough", 0.41f);                
             }
         }
+
+
     }
 
     void DownThrough()
     {
-
-        GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-        
+        GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;        
     }
+
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.transform.tag == "platform") //check to see if we're on platform to enable down jump-through
         {
             onPlatform = true;
+            jumpCount = 0;
+        }
+
+        if(collision.collider.name == "floors")
+        {
+            jumpCount = 0;
         }
     }
 
@@ -262,21 +296,34 @@ public class PlayerScript : MonoBehaviour {
         {
            
                 onLadder = true;
-                rb.velocity = Vector3.zero;
-            
-           
-        }
-
-
+                rb.velocity = Vector3.zero;           
+        }        
 
         if(collision.transform.parent != null)
         {
-            if(collision.transform.parent.tag == "enemies")
-                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true;
-                if(collision.transform.name == "triggerDetection")
+            if (collision.transform.parent.tag == "enemies")
+            {
+                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true; //bad guy sees the player
+                if (!collision.transform.parent.GetComponent<BaddieScript>().firstSeen)
                 {
-                StartCoroutine("DamageFlash");
+                    collision.transform.parent.GetComponent<BaddieScript>().pub_Fire();
+                    collision.transform.parent.GetComponent<BaddieScript>().run_FirstSeen();
+                    collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true; 
                 }
+                
+                if (collision.transform.name == "triggerDetection")
+                {
+                    StartCoroutine("DamageFlash");
+                }
+            }
+        }
+
+        if(collision.transform.tag == "spawner")
+        {
+            Debug.Log("hit spawner");
+            Debug.Log(collision.GetComponent<SpawnScript>().waveCounter);
+            collision.GetComponent<SpawnScript>().Spawn();
+                
         }
     }
 

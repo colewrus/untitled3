@@ -34,6 +34,10 @@ public class BaddieScript : MonoBehaviour {
 
     public Color redColor;
     public Color baseColor;
+
+    public bool firstSeen; //is this the first time the bad guy has seen the player?
+    public bool shotLock;
+
     private void Awake()
     {
        
@@ -45,7 +49,7 @@ public class BaddieScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        
+        shotLock = true;
         startPos = this.transform.position;
         moveBack = false;
         actualDest = destPos;
@@ -54,7 +58,8 @@ public class BaddieScript : MonoBehaviour {
       
         destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
         actualDest = destPos;
-        playerSeen = false;       
+        playerSeen = false;
+        StartCoroutine("Awake_FireLock"); 
     }
 	
 	// Update is called once per frame
@@ -92,6 +97,7 @@ public class BaddieScript : MonoBehaviour {
         distCovered = (Time.time - startTime) * speed;
         fracJourney = distCovered / journeyLength;
         transform.position = Vector3.Lerp(transform.position, actualDest, speed*Time.deltaTime);
+       
     }
 
     public void EnemyScan()
@@ -115,6 +121,13 @@ public class BaddieScript : MonoBehaviour {
 
     }
 
+
+    IEnumerator Awake_FireLock()
+    {
+        yield return new WaitForSeconds(1.1f);
+        shotLock = false;
+    }
+
     IEnumerator FlashRed()
     {
         GetComponent<SpriteRenderer>().color = redColor;
@@ -127,23 +140,44 @@ public class BaddieScript : MonoBehaviour {
 
     }
 
+    public void pub_Fire()
+    {
+        StartCoroutine("SkullFire");
+    }
+
     IEnumerator SkullFire()
     {
-
-        yield return new WaitForSeconds(0.35f);
-
-        GameObject bull = GM.instance.GetBullets();
-        if(bull != null)
+       
+        destPos = this.transform.position;
+        StartCoroutine("FlashRed");
+        yield return new WaitForSeconds(0.65f);
+        if (!shotLock)
         {
-            Vector3 target = PlayerScript.instance.transform.position - transform.position;
-                      
-            bull.transform.position = this.transform.position;
-            bull.GetComponent<BulletScript>().target = target;
-            bull.GetComponent<BulletScript>().speed = BulletSpeed;
-            bull.SetActive(true);
-            bull.GetComponent<Rigidbody2D>().velocity = target.normalized * BulletSpeed;     
-        }
-      
+            GameObject bull = GM.instance.GetBullets();
 
+            if (bull != null)
+            {
+                Vector3 target = PlayerScript.instance.transform.position - transform.position;
+
+                bull.transform.position = this.transform.position;
+                bull.GetComponent<BulletScript>().target = target;
+                bull.GetComponent<BulletScript>().speed = BulletSpeed;
+                bull.SetActive(true);
+                bull.GetComponent<Rigidbody2D>().velocity = target.normalized * BulletSpeed;
+            }
+        }
+
+    }
+
+    public void run_FirstSeen()
+    {
+        StartCoroutine("First_Seen_Decay");
+    }
+
+    IEnumerator First_Seen_Decay()
+    {
+      
+        yield return new WaitForSeconds(5.0f);      
+        firstSeen = false;
     }
 }

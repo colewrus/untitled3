@@ -8,6 +8,8 @@ TagManager:
   - ladders
   - enemies
   - bulletZone
+  - spawner
+  - door
   layers:
   - Default
   - TransparentFX

@@ -9,6 +9,8 @@ public class WaveBuilder
     public List<GameObject> waveObj = new List<GameObject>();
     public BoxCollider2D waveZone;
     GameObject temp;
+
+
     public void WaveBuilderSpawn()
     {
         //instantiate game objects at random point in the collider
@@ -19,20 +21,48 @@ public class WaveBuilder
         {
             temp = GameObject.Instantiate(waveObj[i], randoV, Quaternion.identity) as GameObject;
             temp.GetComponent<BaddieScript>().moveZone = waveZone;
-     ;
+     
 
             GM.instance.AddEnemy();
+            GM.instance.mainSource.PlayOneShot(GM.instance.fxClips[0]);
             PlayerScript.instance.enemyCollider.Add(temp.GetComponent<BoxCollider2D>());
         }
     }           
+
+  
 }
 
+[System.Serializable]
+public class PlacedSpawn
+{
+    public List<GameObject> spawnPlace = new List<GameObject>();
+    public List<GameObject> spawnObj = new List<GameObject>();
+    GameObject temp;
+    public BoxCollider2D waveZone;
+
+    public void SpawnWave()
+    {
+       
+        for (int i = 0; i < spawnObj.Count; i++)
+        {
+            
+            temp = GameObject.Instantiate(spawnObj[i], spawnPlace[i].transform.position, Quaternion.identity) as GameObject;
+            temp.GetComponent<BaddieScript>().moveZone = waveZone;
+            //init baddie
+            GM.instance.AddEnemy();
+            GM.instance.mainSource.PlayOneShot(GM.instance.fxClips[0]);
+            PlayerScript.instance.enemyCollider.Add(temp.GetComponent<BoxCollider2D>());
+        }
+    }
+}
 public class SpawnScript : MonoBehaviour {
 
+    public List<PlacedSpawn> p_Waves = new List<PlacedSpawn>();
     public int waveCounter;
-    public List<GameObject> myObj = new List<GameObject>();
-    public List<WaveBuilder> myWaves = new List<WaveBuilder>();
-    public Vector3 destPos;
+
+    //public List<GameObject> myObj = new List<GameObject>();
+    //public List<WaveBuilder> myWaves = new List<WaveBuilder>();
+    //public Vector3 destPos;
     public float timer;
     public float tick;
     public bool activeSpawn;
@@ -44,14 +74,18 @@ public class SpawnScript : MonoBehaviour {
 	void Start () {
         tick = 0;
         waveCounter = 0;
-        for(int i=0; i < myWaves.Count; i++)
+        /*
+        for (int i=0; i < myWaves.Count; i++)
         {
             myWaves[i].waveZone = transform.parent.GetComponent<BoxCollider2D>();
         }
+        */if(activeSpawn)
+            StartCoroutine("StartSpawn");
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        /*
         if (activeSpawn)
         {
             if(tick < timer)
@@ -59,21 +93,31 @@ public class SpawnScript : MonoBehaviour {
                 tick += 1 * Time.deltaTime;
             }else
             {
-               // Spawn();
-                SpawnWave();
-                tick = 0;
+                Spawn();                
+                //SpawnWave();                
             }
         }
+        */
 	}
 
-
-    void Spawn()
+    IEnumerator StartSpawn()
     {
-        tempSpawn = (GameObject)Instantiate(myObj[1], transform.position, Quaternion.identity);
-        //tempSpawn.GetComponent<BaddieScript>().destPos = destPos;
+        yield return new WaitForSeconds(timer);
+        Spawn();
     }
 
+    public void Spawn()
+    {
+        //tempSpawn = (GameObject)Instantiate(myObj[1], transform.position, Quaternion.identity);
+        //tempSpawn.GetComponent<BaddieScript>().destPos = destPos;
+        if(waveCounter < p_Waves.Count)
+        {
+            p_Waves[waveCounter].SpawnWave();
+            waveCounter++;
+        }
+    }
 
+    /*
     void SpawnWave()
     {
         
@@ -83,4 +127,5 @@ public class SpawnScript : MonoBehaviour {
             waveCounter++;
         }        
     }
+    */
 }
