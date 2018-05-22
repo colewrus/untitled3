@@ -19,6 +19,9 @@ public class BaddieScript : MonoBehaviour {
     public bool moveBack; //when true it sets object to move back towards it's start position
 	public BoxCollider2D moveZone;
 
+
+
+
     public float timer;
     float startTime;
     public float speed;
@@ -27,6 +30,7 @@ public class BaddieScript : MonoBehaviour {
     float journeyLength;
     float tick;
 
+    public float health; 
 
     public GameObject bullet;
     public float BulletSpeed;
@@ -56,10 +60,12 @@ public class BaddieScript : MonoBehaviour {
         startTime = Time.time;
         Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
       
-        destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
-        actualDest = destPos;
+        //destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+        //actualDest = destPos;
         playerSeen = false;
         StartCoroutine("Awake_FireLock"); 
+
+   
     }
 	
 	// Update is called once per frame
@@ -69,7 +75,9 @@ public class BaddieScript : MonoBehaviour {
         {
             SkullBehavior();
         }
-
+        if(badType == BaddieType.blob){
+            BlobBehavior();
+        }
     }
 
 
@@ -98,6 +106,33 @@ public class BaddieScript : MonoBehaviour {
         fracJourney = distCovered / journeyLength;
         transform.position = Vector3.Lerp(transform.position, actualDest, speed*Time.deltaTime);
        
+    }
+
+
+    void BlobBehavior(){
+
+        if(playerSeen){
+            actualDest = GameObject.FindWithTag("Player").transform.position;
+
+            if(tick<timer){
+                tick += Time.deltaTime;
+            }else{
+                Debug.Log(gameObject.GetComponent<Rigidbody2D>().velocity);
+                Vector2 tempV2 = new Vector2((actualDest.x - transform.position.x), 1.2f);
+                tempV2 = tempV2.normalized* speed;
+                gameObject.GetComponent<Rigidbody2D>().AddForce(tempV2, ForceMode2D.Impulse);
+                Debug.Log(tempV2);
+                tick = 0;
+            }
+
+
+
+            /*
+             * distCovered = (Time.time - startTime) * speed;
+            fracJourney = distCovered / journeyLength;
+            transform.position = Vector3.Lerp(transform.position, actualDest, speed * Time.deltaTime);
+            */
+        }
     }
 
     public void EnemyScan()
@@ -142,7 +177,10 @@ public class BaddieScript : MonoBehaviour {
 
     public void pub_Fire()
     {
-        StartCoroutine("SkullFire");
+        if(badType == BaddieType.skull){
+            StartCoroutine("SkullFire");
+        }
+
     }
 
     IEnumerator SkullFire()

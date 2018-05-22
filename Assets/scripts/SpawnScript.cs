@@ -79,8 +79,12 @@ public class SpawnScript : MonoBehaviour {
         {
             myWaves[i].waveZone = transform.parent.GetComponent<BoxCollider2D>();
         }
-        */if(activeSpawn)
+        */
+
+        if(activeSpawn)
+        {
             StartCoroutine("StartSpawn");
+        }
 	}
 	
 	// Update is called once per frame
@@ -102,6 +106,8 @@ public class SpawnScript : MonoBehaviour {
 
     IEnumerator StartSpawn()
     {
+        yield return new WaitForSeconds(1f);
+        GM.instance.AnnounceWave();
         yield return new WaitForSeconds(timer);
         Spawn();
     }

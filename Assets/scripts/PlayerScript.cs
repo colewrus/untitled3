@@ -33,7 +33,12 @@ public class PlayerScript : MonoBehaviour {
     public float bulletCount;
     public float shotDelay;
     public float ReloadTimer;
+    public float damage;
+
+
     GameObject currentPlatform;
+
+
 
     public Color redColor;
     public Color baseColor;
@@ -170,9 +175,16 @@ public class PlayerScript : MonoBehaviour {
             
             if(hit2d.collider.transform.tag == "enemies")
             {
-                enemyCollider.Remove(hit2d.collider);
-                Destroy(hit2d.collider.gameObject);
-                GM.instance.RemoveEnemy();
+                //check for their health;
+                Debug.Log(hit2d.collider.gameObject.GetComponent<BaddieScript>().health);
+                if(hit2d.collider.gameObject.GetComponent<BaddieScript>().health - damage <= 0){
+                    enemyCollider.Remove(hit2d.collider);
+                    Destroy(hit2d.collider.gameObject);
+                    GM.instance.RemoveEnemy();
+                }else{
+                    hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
+                }
+
             }
         }
 
@@ -212,6 +224,11 @@ public class PlayerScript : MonoBehaviour {
                 
             }
                 
+        }
+
+        if(Input.GetKeyDown(KeyCode.Alpha0)){
+            Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
         }
 
         if (Input.GetKey(KeyCode.S))
@@ -320,7 +337,6 @@ public class PlayerScript : MonoBehaviour {
 
         if(collision.transform.tag == "spawner")
         {
-            Debug.Log("hit spawner");
             Debug.Log(collision.GetComponent<SpawnScript>().waveCounter);
             collision.GetComponent<SpawnScript>().Spawn();
                 

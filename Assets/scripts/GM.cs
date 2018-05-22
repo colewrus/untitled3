@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+public enum Chapter { intro, chapter1, chapter2, chapter3, chapter4, finale };
+
 public class GM : MonoBehaviour {
 
     public static GM instance = null;
+
+    public Chapter myChapter;
+
     public int enemyCount;
     public Text t_enemyCount;
 
@@ -23,6 +29,11 @@ public class GM : MonoBehaviour {
     public GameObject bullet;
     public int poolCount;
 
+
+    public Text WaveAnnouncer;
+    public int WaveCount;
+    public Image Wave_Announce_BKG;
+
     private void Awake()
     {
         instance = this;
@@ -35,19 +46,38 @@ public class GM : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        timer = 0;
-        enemyCount = GameObject.FindGameObjectsWithTag("enemies").Length-1;
+        myChapter = Chapter.intro;
 
+        WaveCount = 0;
+        WaveAnnouncer.gameObject.SetActive(false);
+        Wave_Announce_BKG.gameObject.SetActive(false);
+        timer = 0;
+
+        enemyCount = GameObject.FindGameObjectsWithTag("enemies").Length - 1;
         t_enemyCount.text = "x" + enemyCount;
 
+        //pool our bullets
         for(int i=0; i<poolCount; i++)
         {
             GameObject obj = (GameObject)Instantiate(bullet);
             obj.SetActive(false);
             BulletPool.Add(obj);
         }
+
+       // AnnounceWave();
     }
 	
+
+    public void IntroRun(){
+        /*see that blob, he's a problem blob, he don't see you just yet but when you does you're gonna need to put him in the dirt
+         *Give Control
+         *Player dies to blob: wow, now that's a bit embarassing, here let me help you with that
+         *Player shoots blob:
+         *
+
+        */
+    }
+
     public GameObject GetBullets()
     {
         for(int i= 0; i < BulletPool.Count; i++)
@@ -58,6 +88,18 @@ public class GM : MonoBehaviour {
             }
         }
         return null;
+    }
+
+    public void AnnounceWave(){
+        //start the fade in coroutine
+        //run an animation?
+        WaveCount++;
+
+        WaveAnnouncer.gameObject.SetActive(true);
+        Wave_Announce_BKG.gameObject.SetActive(true);
+        WaveAnnouncer.text = "Wave " + WaveCount;
+        WaveAnnouncer.GetComponent<Animator>().Play("waveAnnouncer");
+        Wave_Announce_BKG.GetComponent<Animator>().Play("waveAnnounceBKG");
     }
 
     void Watch()
