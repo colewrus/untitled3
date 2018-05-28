@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+
 
 public class PlayerScript : MonoBehaviour {
 
@@ -91,6 +93,7 @@ public class PlayerScript : MonoBehaviour {
         PlayerMove();
         if (Input.GetMouseButtonDown(0))
         {
+            
             if (bulletCount <= 0)
             {
                 return;
@@ -119,6 +122,19 @@ public class PlayerScript : MonoBehaviour {
         LadderMovement();
         Reticule();
 	}
+
+    public List<RaycastResult> RaycastMouse()
+    {
+        PointerEventData pointerData = new PointerEventData(EventSystem.current);
+
+        pointerData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+        Debug.Log(results.Count);
+        return results;
+
+    }
 
     void Reticule()
     {
@@ -184,7 +200,6 @@ public class PlayerScript : MonoBehaviour {
                 }else{
                     hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
                 }
-
             }
         }
 
@@ -352,6 +367,8 @@ public class PlayerScript : MonoBehaviour {
         GetComponent<SpriteRenderer>().color = redColor;
         yield return new WaitForSeconds(0.2f);
         GetComponent<SpriteRenderer>().color = baseColor;
+
+
     }
 
     private void OnTriggerExit2D(Collider2D collision)

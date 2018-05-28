@@ -4,13 +4,39 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
+
+[System.Serializable]
+public class StoryElement
+{
+
+    public string message;
+    public bool ActionRequired;
+    public PlacedSpawn mySpawn;
+
+
+
+}
+
+
 public enum Chapter { intro, chapter1, chapter2, chapter3, chapter4, finale };
+
+
 
 public class GM : MonoBehaviour {
 
     public static GM instance = null;
 
     public Chapter myChapter;
+
+    public List<StoryElement> myStory = new List<StoryElement>();
+    public GameObject textPanel;
+    public Text storyText;
+    public int storyPos;
+
+    public GameObject namePanel;
+    public InputField nameInput;
+
+    string playerName;
 
     public int enemyCount;
     public Text t_enemyCount;
@@ -64,9 +90,30 @@ public class GM : MonoBehaviour {
             BulletPool.Add(obj);
         }
 
+        namePanel.SetActive(false);
+        PopulateText();
        // AnnounceWave();
     }
 	
+
+    void PopulateText(){
+        textPanel.SetActive(true);
+        storyText.text = myStory[storyPos].message;
+    }
+
+    public void Listen(){
+
+        if(storyPos == 0){
+            textPanel.SetActive(false);
+            namePanel.SetActive(true);
+        }
+    }
+
+
+    public void SubmitName(){
+        playerName = nameInput.text;
+        Debug.Log(playerName);
+    }
 
     public void IntroRun(){
         /*see that blob, he's a problem blob, he don't see you just yet but when you does you're gonna need to put him in the dirt

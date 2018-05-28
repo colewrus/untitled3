@@ -1,6 +1,6 @@
 ﻿<Properties StartupConfiguration="{F6642D5B-5861-890C-70E7-E8CE369EF93C}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/BaddieScript.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/scripts/GM.cs">
     <Files>
       <File FileName="Assets/scripts/PlayerScript.cs" Line="179" Column="90" />
       <File FileName="Assets/paddle/ballScript.cs" Line="30" Column="25" />
