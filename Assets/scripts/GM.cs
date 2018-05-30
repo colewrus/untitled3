@@ -102,17 +102,51 @@ public class GM : MonoBehaviour {
     }
 
     public void Listen(){
-
+        Debug.Log(storyPos);
         if(storyPos == 0){
+            PlayerScript.instance.fireLock = true;
             textPanel.SetActive(false);
             namePanel.SetActive(true);
         }
+
+        if(storyPos == 1){
+
+            storyPos++;
+            PopulateText();
+            return;
+        }
+
+        if(storyPos == 2){
+            
+            storyPos++;
+            PopulateText();
+            return;
+        }
+        if (storyPos == 3)
+        {
+            textPanel.SetActive(false);
+            //spawn a blob and pacify it
+            storyPos++;
+
+        }
+
+
     }
 
 
+    IEnumerator DelayFunction(float t){
+        yield return new WaitForSeconds(t);
+        PopulateText();
+    }
+
     public void SubmitName(){
         playerName = nameInput.text;
+        storyPos = 1;
+        namePanel.SetActive(false);
         Debug.Log(playerName);
+        IEnumerator tempCoroutine = DelayFunction(1.5f);
+        StartCoroutine(tempCoroutine);
+
     }
 
     public void IntroRun(){

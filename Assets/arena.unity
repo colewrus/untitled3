@@ -44778,6 +44778,25 @@ MonoBehaviour:
       spawnPlace: []
       spawnObj: []
       waveZone: {fileID: 0}
+  - message: 'very well, [NAME], let''s begin. This is the crucible, it will serve
+      as your base '
+    ActionRequired: 0
+    mySpawn:
+      spawnPlace: []
+      spawnObj: []
+      waveZone: {fileID: 0}
+  - message: 'of operations as you secure your assigned sector. '
+    ActionRequired: 0
+    mySpawn:
+      spawnPlace: []
+      spawnObj: []
+      waveZone: {fileID: 0}
+  - message: First you need to clear this space, let's check your weapon.
+    ActionRequired: 0
+    mySpawn:
+      spawnPlace: []
+      spawnObj: []
+      waveZone: {fileID: 0}
   - message: 
     ActionRequired: 0
     mySpawn:
@@ -44793,8 +44812,8 @@ MonoBehaviour:
   t_enemyCount: {fileID: 1138688469}
   mainSource: {fileID: 0}
   clips:
-  - {fileID: 8300000, guid: 94d72c20209cf28499c53dd0447a5b90, type: 3}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: a5caf75d41d4f494787d7d4692b1f542, type: 3}
+  - {fileID: 8300000, guid: d792c2882ba974dfdba563015f16fba5, type: 3}
   - {fileID: 0}
   fxClips:
   - {fileID: 8300000, guid: 54d850bb108938245a96764a087a2af1, type: 3}
@@ -45980,6 +45999,7 @@ MonoBehaviour:
   shotDelay: 0
   ReloadTimer: 0.75
   damage: 1
+  fireLock: 0
   redColor: {r: 0.9632353, g: 0.070826136, b: 0.070826136, a: 1}
   baseColor: {r: 1, g: 1, b: 1, a: 1}
   walkingSource: {fileID: 1509488704}
@@ -46184,7 +46204,7 @@ GameObject:
   - component: {fileID: 1597662731}
   - component: {fileID: 1597662730}
   m_Layer: 5
-  m_Name: Text
+  m_Name: storyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46326,7 +46346,7 @@ GameObject:
   - component: {fileID: 1675196430}
   - component: {fileID: 1675196429}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: storyPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

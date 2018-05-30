@@ -37,6 +37,7 @@ public class PlayerScript : MonoBehaviour {
     public float ReloadTimer;
     public float damage;
 
+    public bool fireLock; 
 
     GameObject currentPlatform;
 
@@ -93,20 +94,23 @@ public class PlayerScript : MonoBehaviour {
         PlayerMove();
         if (Input.GetMouseButtonDown(0))
         {
-            
-            if (bulletCount <= 0)
-            {
-                return;
+
+            if(!fireLock){
+                if (bulletCount <= 0)
+                {
+                    return;
+                }
+                if (bulletCount > 1)
+                {
+                    Shoot();
+                    StopCoroutine("c_Reload");
+                }else
+                {              
+                    Shoot();
+                    StartCoroutine("c_Reload");
+                } 
             }
-            if (bulletCount > 1)
-            {
-                Shoot();
-                StopCoroutine("c_Reload");
-            }else
-            {              
-                Shoot();
-                StartCoroutine("c_Reload");
-            }           
+          
  
         }
 
