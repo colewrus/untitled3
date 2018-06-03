@@ -186,11 +186,14 @@ MonoBehaviour:
   moveZone: {fileID: 0}
   timer: 4
   speed: 0.4
+  health: 0
   bullet: {fileID: 1903121727310156, guid: d3e90e57c9b2eab49811e7cccf389d08, type: 2}
   BulletSpeed: 4
   playerSeen: 0
   redColor: {r: 0.9705882, g: 0.021410054, b: 0.021410054, a: 1}
   baseColor: {r: 1, g: 1, b: 1, a: 1}
+  firstSeen: 0
+  shotLock: 0
 --- !u!212 &212020210539547692
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -204,6 +207,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:

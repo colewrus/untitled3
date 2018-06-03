@@ -91,12 +91,13 @@ public class GM : MonoBehaviour {
         }
 
         namePanel.SetActive(false);
-        PopulateText();
+        //PopulateText();
        // AnnounceWave();
     }
 	
 
     void PopulateText(){
+        PlayerScript.instance.fireLock = true;
         textPanel.SetActive(true);
         storyText.text = myStory[storyPos].message;
     }
@@ -120,6 +121,7 @@ public class GM : MonoBehaviour {
             
             storyPos++;
             PopulateText();
+            PlayerScript.instance.fireLock = false;
             return;
         }
         if (storyPos == 3)

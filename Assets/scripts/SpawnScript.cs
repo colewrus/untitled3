@@ -72,11 +72,6 @@ public class SpawnScript : MonoBehaviour {
         tick = 0;
         waveCounter = 0;
 
-
-        if(activeSpawn)
-        {
-            StartCoroutine("StartSpawn");
-        }
 	}
 	
 

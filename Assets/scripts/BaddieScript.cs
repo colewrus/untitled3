@@ -59,9 +59,13 @@ public class BaddieScript : MonoBehaviour {
         actualDest = destPos;
         startTime = Time.time;
         Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
-      
-        //destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
-        //actualDest = destPos;
+        
+        if(badType == BaddieType.skull)
+        {
+            destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+        }
+        
+        actualDest = destPos;
         playerSeen = false;
         StartCoroutine("Awake_FireLock"); 
 

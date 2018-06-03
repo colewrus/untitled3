@@ -12,6 +12,7 @@ public class PlayerScript : MonoBehaviour {
 
     public GameObject aimReticule;
     Collider2D aimCollider;
+    public GameObject bulletZone;
     public List<Collider2D> enemyCollider = new List<Collider2D>();
     bool aimOverlap;
 
@@ -35,6 +36,7 @@ public class PlayerScript : MonoBehaviour {
     public float bulletCount;
     public float shotDelay;
     public float ReloadTimer;
+    bool reloading; //are you actively reloading
     public float damage;
 
     public bool fireLock; 
@@ -78,7 +80,8 @@ public class PlayerScript : MonoBehaviour {
             }
         }
         walkingSource.clip = WalkingClips[0];
-        myAudio = GetComponent<AudioSource>();       
+        myAudio = GetComponent<AudioSource>();
+        reloading = false;
 	}
 	
 	// Update is called once per frame
@@ -96,6 +99,7 @@ public class PlayerScript : MonoBehaviour {
         {
 
             if(!fireLock){
+                reloading = false;
                 if (bulletCount <= 0)
                 {
                     return;
@@ -116,7 +120,8 @@ public class PlayerScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            StartCoroutine("c_Reload");
+            if(!reloading)
+                StartCoroutine("c_Reload");
         }
 
         if(bulletCount > 6)
@@ -163,17 +168,19 @@ public class PlayerScript : MonoBehaviour {
     {
         while (bulletCount < 6)
         {
+            reloading = true;
             yield return new WaitForSeconds(ReloadTimer);
             bulletCount++;
-            myAudio.PlayOneShot(EffectsClips[2]);
+            myAudio.PlayOneShot(EffectsClips[2], 0.45f);
             bullets[Mathf.FloorToInt(bulletCount) - 1].SetActive(true);
             if (bulletCount == 6)
             {
                 myAudio.PlayOneShot(EffectsClips[3]);
                 yield return new WaitForSeconds(EffectsClips[3].length);
-                myAudio.PlayOneShot(EffectsClips[4], 1.0f);
+                myAudio.PlayOneShot(EffectsClips[4], 1);
             }
         }
+        
         
     }
 
@@ -190,6 +197,7 @@ public class PlayerScript : MonoBehaviour {
 
         if(hit2d.collider != null)
         {
+            
             part.transform.position = hit2d.point;
             part.Play();
             
@@ -209,7 +217,9 @@ public class PlayerScript : MonoBehaviour {
 
         Ray myRay = new Ray(transform.position, destinationActual*gunRange);
         Physics2D.Raycast(transform.position, destinationActual, gunRange);  
+
         Debug.DrawRay(transform.position, destinationActual*gunRange, Color.cyan);
+        Debug.DrawLine(transform.position, destinationActual * gunRange, Color.white, 10);
        
         myAudio.PlayOneShot(EffectsClips[0], 0.8f);
         bulletCount--;
@@ -224,7 +234,7 @@ public class PlayerScript : MonoBehaviour {
         rb.velocity = new Vector3(horiz * speed, Mathf.Clamp(rb.velocity.y, -10, 10));
         if(rb.velocity.y == 0 && rb.velocity.x != 0 && !walkingSource.isPlaying)
         {
-            walkingSource.volume = Random.Range(0.1f, 0.25f);
+            walkingSource.volume = Random.Range(0.25f, 0.55f);
             walkingSource.pitch = Random.Range(0.6f, 1.1f);
             walkingSource.Play();
         }
@@ -328,6 +338,17 @@ public class PlayerScript : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
+        if(collision.transform.tag == "door")
+        {
+            if (collision.gameObject.GetComponent<DoorScript>().activeDoor)
+            {
+                transform.position = collision.gameObject.GetComponent<DoorScript>().dest.position;
+                bulletZone.transform.position = collision.gameObject.GetComponent<DoorScript>().bulletZoneReset.position;
+            }
+           
+        }
+
         if(collision.transform.tag == "ladders")
         {
            
@@ -356,9 +377,10 @@ public class PlayerScript : MonoBehaviour {
 
         if(collision.transform.tag == "spawner")
         {
-            Debug.Log(collision.GetComponent<SpawnScript>().waveCounter);
-            collision.GetComponent<SpawnScript>().Spawn();
-                
+            if (collision.GetComponent<SpawnScript>().activeSpawn)
+            {
+                collision.GetComponent<SpawnScript>().Spawn();
+            }            
         }
     }
 
