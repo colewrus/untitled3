@@ -10,6 +10,7 @@ TagManager:
   - bulletZone
   - spawner
   - door
+  - bullet
   layers:
   - Default
   - TransparentFX

@@ -208,6 +208,15 @@ public class PlayerScript : MonoBehaviour {
                 if(hit2d.collider.gameObject.GetComponent<BaddieScript>().health - damage <= 0){
                     enemyCollider.Remove(hit2d.collider);
                     Destroy(hit2d.collider.gameObject);
+                    if(hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject!= null)
+                    {
+                        SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
+                        //hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>().p_Waves
+                        Debug.Log(tempScript.p_Waves.Count);
+                       
+                        tempScript.p_Waves[tempScript.waveCounter-1].EnemyKilled();
+                        Debug.Log(tempScript.p_Waves[tempScript.waveCounter - 1].waveCount);
+                    }
                     GM.instance.RemoveEnemy();
                 }else{
                     hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
@@ -368,7 +377,7 @@ public class PlayerScript : MonoBehaviour {
                     collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true; 
                 }
                 
-                if (collision.transform.name == "triggerDetection")
+                if (collision.transform.name == "triggerDetection") //hit box on enemies for on-touch damage
                 {
                     StartCoroutine("DamageFlash");
                 }
@@ -381,6 +390,30 @@ public class PlayerScript : MonoBehaviour {
             {
                 collision.GetComponent<SpawnScript>().Spawn();
             }            
+        }
+
+        if(collision.transform.tag == "bullet")
+        {
+            Vector3 dir = (gameObject.GetComponent<CapsuleCollider2D>().bounds.ClosestPoint(collision.transform.position) - transform.position);
+            rb.AddForce(new Vector2(-8, 1), ForceMode2D.Impulse);
+            Debug.Log(new Vector2(dir.x, dir.y).normalized*15);
+            horiz = 0.5f * dir.x;
+            //Vector3 dir = (collision.transform.position - transform.position);
+            //Debug.Log(dir.normalized);
+
+            //Debug.Break();
+            /*
+            RaycastHit2D hit;
+            hit = Physics2D.Raycast(transform.position, transform.forward, gameObject.GetComponent<CapsuleCollider2D>().size.x);
+            Debug.DrawLine(transform.position, transform.forward * gameObject.GetComponent<CapsuleCollider2D>().size.x, Color.green);
+            Debug.Log(gameObject.GetComponent<CapsuleCollider2D>().size.x);
+            if (hit.collider != null)
+            {
+                Debug.Log(hit.point);
+            }
+            */
+          
+            StartCoroutine("DamageFlash");
         }
     }
 

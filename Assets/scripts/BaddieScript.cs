@@ -18,8 +18,8 @@ public class BaddieScript : MonoBehaviour {
     Vector3 actualDest;
     public bool moveBack; //when true it sets object to move back towards it's start position
 	public BoxCollider2D moveZone;
-
-
+    public GameObject ParentObject;
+    
 
 
     public float timer;
