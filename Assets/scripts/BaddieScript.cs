@@ -45,7 +45,7 @@ public class BaddieScript : MonoBehaviour {
     private void Awake()
     {
        
-        startPos = this.transform.position;
+      
         moveBack = false;
       
         startTime = Time.time;
@@ -61,6 +61,11 @@ public class BaddieScript : MonoBehaviour {
         Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         
         if(badType == BaddieType.skull)
+        {
+            destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+        }
+
+        if(badType == BaddieType.bat)
         {
             destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
         }
@@ -121,11 +126,11 @@ public class BaddieScript : MonoBehaviour {
             if(tick<timer){
                 tick += Time.deltaTime;
             }else{
-                Debug.Log(gameObject.GetComponent<Rigidbody2D>().velocity);
+                
                 Vector2 tempV2 = new Vector2((actualDest.x - transform.position.x), 1.2f);
                 tempV2 = tempV2.normalized* speed;
                 gameObject.GetComponent<Rigidbody2D>().AddForce(tempV2, ForceMode2D.Impulse);
-                Debug.Log(tempV2);
+                
                 tick = 0;
             }
 

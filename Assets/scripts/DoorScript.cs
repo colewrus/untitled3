@@ -8,10 +8,16 @@ public class DoorScript : MonoBehaviour {
     public bool activeDoor;
     public Transform bulletZoneReset; //moves the bullet zone for the pooled bullets 
 
+    public GameObject doorBarrier;
+    public bool boolBarrier;
+
 	// Use this for initialization
 	void Start () {
 		
 	}
 	
-
+    public void RemoveBarrier()
+    {
+        doorBarrier.SetActive(false);
+    }
 }

@@ -204,20 +204,23 @@ public class PlayerScript : MonoBehaviour {
             if(hit2d.collider.transform.tag == "enemies")
             {
                 //check for their health;
-                Debug.Log(hit2d.collider.gameObject.GetComponent<BaddieScript>().health);
+                
                 if(hit2d.collider.gameObject.GetComponent<BaddieScript>().health - damage <= 0){
                     enemyCollider.Remove(hit2d.collider);
                     Destroy(hit2d.collider.gameObject);
-                    if(hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject!= null)
+
+                    SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
+                    tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
+
+                    /* is this necessary? Why were we looking for the Parent Object
+                    if (hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject!= null)
                     {
-                        SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
-                        //hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>().p_Waves
-                        Debug.Log(tempScript.p_Waves.Count);
-                       
-                        tempScript.p_Waves[tempScript.waveCounter-1].EnemyKilled();
-                        Debug.Log(tempScript.p_Waves[tempScript.waveCounter - 1].waveCount);
+                        SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();   
+                        tempScript.p_Waves[tempScript.waveCounter-1].EnemyKilled();  
                     }
+                    */
                     GM.instance.RemoveEnemy();
+
                 }else{
                     hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
                 }

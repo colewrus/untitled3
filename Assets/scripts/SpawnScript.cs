@@ -43,10 +43,15 @@ public class PlacedSpawn
     public GameObject gate;
 
     public float waveCount; //the number of enemies currently alive in wave. used to determine if a wave is finished
+    public GameObject spawnDoor; //door that closes behind the player
 
     public void SpawnWave(GameObject parentObj)
     {
-       
+        if(spawnDoor != null)
+        {
+            spawnDoor.SetActive(true);
+        }
+        
         for (int i = 0; i < spawnObj.Count; i++)
         {
             
@@ -57,18 +62,32 @@ public class PlacedSpawn
             GM.instance.mainSource.PlayOneShot(GM.instance.fxClips[0]);
             PlayerScript.instance.enemyCollider.Add(temp.GetComponent<BoxCollider2D>());
             waveCount++;
-            if(activateGate)
-                temp.GetComponent<BaddieScript>().ParentObject = parentObj;
+            temp.GetComponent<BaddieScript>().ParentObject = parentObj;
         }
     }
 
     public void EnemyKilled()
     {
-        Debug.Log("holy shit");
+        
         waveCount--;
+        Debug.Log("Wave Count " + waveCount);
         if(waveCount <= 0)
         {
-            gate.GetComponent<DoorScript>().activeDoor = true;
+            
+            if(spawnDoor!=null)
+                spawnDoor.SetActive(false);
+
+            if (activateGate)
+            {
+                gate.GetComponent<DoorScript>().activeDoor = true;
+                spawnDoor.SetActive(false);
+
+                if (gate.GetComponent<DoorScript>().boolBarrier)
+                {
+                    gate.GetComponent<DoorScript>().RemoveBarrier();
+                }
+            }
+            
         }
     }
 }
@@ -81,7 +100,7 @@ public class SpawnScript : MonoBehaviour {
     public float tick;
     public bool activeSpawn;
 
-   
+    
 
     GameObject tempSpawn;
 	// Use this for initialization
@@ -106,6 +125,7 @@ public class SpawnScript : MonoBehaviour {
         {
             p_Waves[waveCounter].SpawnWave(this.gameObject);
             waveCounter++;
+            
         }
     }
 
