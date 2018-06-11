@@ -57,6 +57,11 @@ public class PlayerScript : MonoBehaviour {
     float jumpCount;
 
     List<GameObject> keys = new List<GameObject>();
+    bool lookAtBoss;
+    GameObject tempBoss; //temporarily hold the boss as a gameobject so camera can pan to it
+    bool returnFromBoss; 
+
+    public bool moveLock; //lock the player movement;
 
     private void Awake()
     {
@@ -84,19 +89,34 @@ public class PlayerScript : MonoBehaviour {
         walkingSource.clip = WalkingClips[0];
         myAudio = GetComponent<AudioSource>();
         reloading = false;
+        lookAtBoss = false;
+        moveLock = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         RaycastHit2D hit_S = Physics2D.Raycast(transform.position, new Vector3(0, -0.75f, 0));
-        Debug.DrawRay(transform.position, new Vector3(0, -0.75f, 0), Color.red);
+      
         if(hit_S.collider.name == "floors")
         {           
             GetComponent<CapsuleCollider2D>().enabled = true;
         }
 
+        if (lookAtBoss)
+        {
+            float step = 0.75f * Time.deltaTime;
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, tempBoss.transform.position + new Vector3(0,0,-2), step);
+        }
 
-        PlayerMove();
+        if (returnFromBoss)
+        {
+            float step = 1.25f * Time.deltaTime;
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + new Vector3(0, 0, -3), step);
+        }
+
+        if(!moveLock)
+            PlayerMove();
+
         if (Input.GetMouseButtonDown(0))
         {
 
@@ -227,13 +247,26 @@ public class PlayerScript : MonoBehaviour {
                     hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
                 }
             }
+
+            if(hit2d.collider.transform.tag == "boss")
+            {
+                if(hit2d.collider.gameObject.GetComponent<Boss_Script>().health - damage <= 0)
+                {
+                    hit2d.collider.gameObject.GetComponent<Boss_Script>().ReceiveDamage(damage);
+                    Debug.Log("holy crap you killed the boss");
+                }
+                else
+                {
+                    hit2d.collider.gameObject.GetComponent<Boss_Script>().ReceiveDamage(damage);
+                }
+            }
         }
 
         Ray myRay = new Ray(transform.position, destinationActual*gunRange);
         Physics2D.Raycast(transform.position, destinationActual, gunRange);  
 
         Debug.DrawRay(transform.position, destinationActual*gunRange, Color.cyan);
-        Debug.DrawLine(transform.position, destinationActual * gunRange, Color.white, 10);
+        
        
         myAudio.PlayOneShot(EffectsClips[0], 0.8f);
         bulletCount--;
@@ -461,6 +494,11 @@ public class PlayerScript : MonoBehaviour {
             {
                 collision.gameObject.GetComponent<DoorScript>().CloseBossDoor();
                 collision.gameObject.GetComponent<DoorScript>().BossFightLocked = true;
+                tempBoss = collision.gameObject.GetComponent<DoorScript>().boss;
+                collision.gameObject.GetComponent<DoorScript>().boss.GetComponent<Boss_Script>()._BatState = BatState.intro;
+                lookAtBoss = true;
+                moveLock = true;
+                StartCoroutine("ReturnFromBossIntro");
                 //collision.gameObject.SetActive(false);
             }
         }
@@ -471,4 +509,22 @@ public class PlayerScript : MonoBehaviour {
                 collision.transform.parent.GetComponent<BaddieScript>().playerSeen = false;
         }
     }
+
+    IEnumerator ReturnFromBossIntro()
+    {
+        yield return new WaitForSeconds(3);
+        lookAtBoss = false;
+        returnFromBoss = true;
+        yield return new WaitForSeconds(2);
+        moveLock = false;
+        if(tempBoss.GetComponent<Boss_Script>().thisBoss == BossType.bat)
+        {
+            tempBoss.GetComponent<Boss_Script>()._BatState = BatState.search;
+            //run the boss function that makes the health bar
+            
+        }
+        tempBoss.GetComponent<Boss_Script>().InitCanvas();
+
+    }
+
 }

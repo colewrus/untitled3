@@ -15,6 +15,7 @@ public class DoorScript : MonoBehaviour {
     public bool LockDoor; //does it open with a key
     public GameObject key;
     public bool BossFightLocked; //is the door locked to keep the player in for the boss fight?
+    public GameObject boss; //who is the boss that is about to get activated?
 
 	// Use this for initialization
 	void Start () {

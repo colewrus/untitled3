@@ -12,6 +12,7 @@ TagManager:
   - door
   - bullet
   - key
+  - boss
   layers:
   - Default
   - TransparentFX
