@@ -11,6 +11,7 @@ TagManager:
   - spawner
   - door
   - bullet
+  - key
   layers:
   - Default
   - TransparentFX

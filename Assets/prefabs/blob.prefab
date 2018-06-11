@@ -234,6 +234,7 @@ MonoBehaviour:
   destPos: {x: 0, y: 0, z: 0}
   moveBack: 0
   moveZone: {fileID: 0}
+  ParentObject: {fileID: 0}
   timer: 1
   speed: 2.2
   health: 5
@@ -280,7 +281,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 25
   m_Sprite: {fileID: 21300000, guid: 592962bc5b7099c469271033275bbc12, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.92156863}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

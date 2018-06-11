@@ -56,6 +56,8 @@ public class PlayerScript : MonoBehaviour {
 
     float jumpCount;
 
+    List<GameObject> keys = new List<GameObject>();
+
     private void Awake()
     {
         instance = this;
@@ -306,6 +308,12 @@ public class PlayerScript : MonoBehaviour {
         {
             jumpCount = 0;
         }
+
+        if(collision.transform.tag == "key")
+        {
+            keys.Add(collision.gameObject);
+            collision.gameObject.SetActive(false);
+        }
     }
 
     void LadderMovement()
@@ -357,6 +365,13 @@ public class PlayerScript : MonoBehaviour {
             {
                 transform.position = collision.gameObject.GetComponent<DoorScript>().dest.position;
                 bulletZone.transform.position = collision.gameObject.GetComponent<DoorScript>().bulletZoneReset.position;
+            }
+
+            if(collision.gameObject.GetComponent<DoorScript>().key == keys[0])
+            {
+                if(!collision.gameObject.GetComponent<DoorScript>().BossFightLocked) //make sure you can't open the door once you init the boss fight
+                    collision.gameObject.GetComponent<DoorScript>().OpenBossDoor();
+                //collision.gameObject.SetActive(false);
             }
            
         }
@@ -438,6 +453,16 @@ public class PlayerScript : MonoBehaviour {
         if(collision.transform.tag == "ladders")
         {
             onLadder = false;            
+        }
+
+        if(collision.transform.tag == "door")
+        {
+            if (collision.gameObject.GetComponent<DoorScript>().key == keys[0])
+            {
+                collision.gameObject.GetComponent<DoorScript>().CloseBossDoor();
+                collision.gameObject.GetComponent<DoorScript>().BossFightLocked = true;
+                //collision.gameObject.SetActive(false);
+            }
         }
 
         if (collision.transform.parent != null)
