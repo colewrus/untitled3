@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 
 public class PlayerScript : MonoBehaviour {
@@ -63,6 +64,14 @@ public class PlayerScript : MonoBehaviour {
 
     public bool moveLock; //lock the player movement;
 
+    public float fadeModifier; //how fast do we want the screen to fade
+    public Image fadeImg;
+    float fadeOpacity;
+    float fadeTime;
+    Color fadeColor;
+    public bool fadeIn;
+    bool fadeOut;
+
     private void Awake()
     {
         instance = this;
@@ -91,12 +100,23 @@ public class PlayerScript : MonoBehaviour {
         reloading = false;
         lookAtBoss = false;
         moveLock = false;
+        
 	}
-	
+
+
+
 	// Update is called once per frame
 	void Update () {
         RaycastHit2D hit_S = Physics2D.Raycast(transform.position, new Vector3(0, -0.75f, 0));
-      
+
+        if (Input.GetKey(KeyCode.X))
+        {
+            fadeIn = true;
+            fadeTime = 0;
+        }
+
+        FadeControl();
+
         if(hit_S.collider.name == "floors")
         {           
             GetComponent<CapsuleCollider2D>().enabled = true;
@@ -165,6 +185,40 @@ public class PlayerScript : MonoBehaviour {
         Debug.Log(results.Count);
         return results;
 
+    }
+
+    void FadeControl()
+    {
+        if (fadeIn)
+        {
+            if (fadeTime > 1.45f) //this value determines how long the fade will sit before transitioning away
+            {
+                fadeOut = true;
+                fadeTime = 0;
+                fadeIn = false;
+
+            }
+
+            fadeTime += fadeModifier * Time.deltaTime;
+            fadeOpacity = Mathf.Lerp(0, 1, fadeTime);
+            fadeColor = fadeImg.color;
+            fadeColor.a = fadeOpacity;
+            fadeImg.color = fadeColor;
+        }
+
+        if (fadeOut)
+        {
+            if (fadeTime > 1)
+            {
+                fadeOut = false;
+
+            }
+            fadeTime += fadeModifier * Time.deltaTime;
+            fadeOpacity = Mathf.Lerp(1, 0, fadeTime);
+            fadeColor = fadeImg.color;
+            fadeColor.a = fadeOpacity;
+            fadeImg.color = fadeColor;
+        }
     }
 
     void Reticule()
@@ -389,6 +443,15 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
+    IEnumerator _DoorTransfer(GameObject DoorObj)
+    {
+        fadeIn = true;
+        //play the door sound
+        yield return new WaitForSeconds(1);
+        transform.position = DoorObj.GetComponent<DoorScript>().dest.position;
+        bulletZone.transform.position = DoorObj.GetComponent<DoorScript>().bulletZoneReset.position;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
@@ -396,8 +459,8 @@ public class PlayerScript : MonoBehaviour {
         {
             if (collision.gameObject.GetComponent<DoorScript>().activeDoor)
             {
-                transform.position = collision.gameObject.GetComponent<DoorScript>().dest.position;
-                bulletZone.transform.position = collision.gameObject.GetComponent<DoorScript>().bulletZoneReset.position;
+                IEnumerator tempCo = _DoorTransfer(collision.gameObject);
+                StartCoroutine(tempCo);
             }
 
             if(collision.gameObject.GetComponent<DoorScript>().key == keys[0])
@@ -490,17 +553,20 @@ public class PlayerScript : MonoBehaviour {
 
         if(collision.transform.tag == "door")
         {
-            if (collision.gameObject.GetComponent<DoorScript>().key == keys[0])
-            {
-                collision.gameObject.GetComponent<DoorScript>().CloseBossDoor();
-                collision.gameObject.GetComponent<DoorScript>().BossFightLocked = true;
-                tempBoss = collision.gameObject.GetComponent<DoorScript>().boss;
-                collision.gameObject.GetComponent<DoorScript>().boss.GetComponent<Boss_Script>()._BatState = BatState.intro;
-                lookAtBoss = true;
-                moveLock = true;
-                StartCoroutine("ReturnFromBossIntro");
-                //collision.gameObject.SetActive(false);
+            if (collision.gameObject.GetComponent<DoorScript>().key != null) {
+                if (collision.gameObject.GetComponent<DoorScript>().key == keys[0])
+                {
+                    collision.gameObject.GetComponent<DoorScript>().CloseBossDoor();
+                    collision.gameObject.GetComponent<DoorScript>().BossFightLocked = true;
+                    tempBoss = collision.gameObject.GetComponent<DoorScript>().boss;
+                    collision.gameObject.GetComponent<DoorScript>().boss.GetComponent<Boss_Script>()._BatState = BatState.intro;
+                    lookAtBoss = true;
+                    moveLock = true;
+                    StartCoroutine("ReturnFromBossIntro");
+                    //collision.gameObject.SetActive(false);
+                }
             }
+
         }
 
         if (collision.transform.parent != null)

@@ -42,6 +42,10 @@ public class BaddieScript : MonoBehaviour {
     public bool firstSeen; //is this the first time the bad guy has seen the player?
     public bool shotLock;
 
+
+    //Bat Behaviour Variables below
+    bool flutterBool;
+
     private void Awake()
     {
        
@@ -87,6 +91,10 @@ public class BaddieScript : MonoBehaviour {
         if(badType == BaddieType.blob){
             BlobBehavior();
         }
+        if(badType == BaddieType.bat)
+        {
+            BatBehavior();
+        }
     }
 
 
@@ -117,6 +125,36 @@ public class BaddieScript : MonoBehaviour {
        
     }
 
+    void BatBehavior()
+    {
+        if (tick < timer && !flutterBool)
+        {
+            tick += Time.deltaTime;
+        }
+        else
+        {
+            destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+            tick = 0;
+            
+            //pick a point, fly to it
+            //arrive
+            //flutter timer starts - enable collision with player
+                //flutter to the right
+                //give time to arrive
+                //flutter to the left
+                //give time to arrive
+        }
+        if(transform.position != destPos)
+        {
+            transform.position = Vector3.Lerp(transform.position, destPos, speed * Time.deltaTime);
+        }
+        else
+        {
+            flutterBool = true;
+        }
+        
+
+    }
 
     void BlobBehavior(){
 

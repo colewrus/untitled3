@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 212450770294626910}
   - component: {fileID: 58177575838135428}
   - component: {fileID: 95760204631868234}
+  - component: {fileID: 114101929699595468}
   m_Layer: 0
   m_Name: Bat1
   m_TagString: Untagged
@@ -36,7 +37,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1952264349032696}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.76, y: 2.5900002, z: -0.14257812}
+  m_LocalPosition: {x: -5.592, y: 2.801, z: -0.14257812}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,6 +76,34 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114101929699595468
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1952264349032696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b08bea1974554849be08ff0981c7f4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myType: 0
+  badType: 1
+  startPos: {x: 0, y: 0, z: 0}
+  destPos: {x: 0, y: 0, z: 0}
+  moveBack: 0
+  moveZone: {fileID: 0}
+  ParentObject: {fileID: 0}
+  timer: 4
+  speed: 0.75
+  health: 3
+  bullet: {fileID: 1903121727310156, guid: d3e90e57c9b2eab49811e7cccf389d08, type: 2}
+  BulletSpeed: 5
+  playerSeen: 0
+  redColor: {r: 0, g: 0, b: 0, a: 0}
+  baseColor: {r: 0, g: 0, b: 0, a: 0}
+  firstSeen: 0
+  shotLock: 0
 --- !u!212 &212450770294626910
 SpriteRenderer:
   m_ObjectHideFlags: 1

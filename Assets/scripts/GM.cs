@@ -60,6 +60,7 @@ public class GM : MonoBehaviour {
     public int WaveCount;
     public Image Wave_Announce_BKG;
 
+    public GameObject fadescreen;
     private void Awake()
     {
         instance = this;
@@ -100,6 +101,11 @@ public class GM : MonoBehaviour {
         PlayerScript.instance.fireLock = true;
         textPanel.SetActive(true);
         storyText.text = myStory[storyPos].message;
+    }
+
+    public void FadeToBlack(float t)
+    {
+        fadescreen.GetComponent<Image>().CrossFadeAlpha(1, t, false);
     }
 
     public void Listen(){
