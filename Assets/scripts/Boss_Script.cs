@@ -31,11 +31,17 @@ public class Boss_Script : MonoBehaviour {
     public Transform attack4Dest;
     public Transform attack8Dest;
     public bool attack4Reposition = false;
-    float shotCount;
-    public float attack4Timer;
+    int shotCount;
+    public float attack4Timer; //time between the 4-direction shot
     float attack4Tick;
     public int attack4Max; //maximum number of 4-dir shots bat takes before moving
     int attack4Count;
+
+    public List<Vector3> shot20Dir = new List<Vector3>(); //order will affect the order shit is fired in
+    public float shot20Timer; //time between each bullet shot in the 20 bullet burst, this'll be fast
+    float shot20Tick;
+    bool fire20cooldown;
+    public float v_fire20Cooldown;
 
 	// Use this for initialization
 	void Start () {
@@ -45,6 +51,7 @@ public class Boss_Script : MonoBehaviour {
         Debug.Log("Dest Max: " + destMax);
         Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         Physics2D.IgnoreCollision(GameObject.Find("floors").GetComponent<Collider2D>(), GetComponent<BoxCollider2D>());
+        fire20cooldown = false;
     }
 	
 	// Update is called once per frame
@@ -63,7 +70,6 @@ public class Boss_Script : MonoBehaviour {
         {
             if(searchTick < searchTimer)
             {
-                Debug.Log("Search Dest: " + destCounter);
                 searchTick += 1 * Time.deltaTime;
                 transform.position = Vector3.Lerp(transform.position, SearchDests[destCounter - 1].position, searchSpeed * Time.deltaTime);
                                  
@@ -74,7 +80,7 @@ public class Boss_Script : MonoBehaviour {
                 if(destCounter == destMax)
                 {
                     destCounter = 1;
-                    _BatState = BatState.attack4;
+                    _BatState = BatState.attack8;
                     attack4Reposition = true;
                 }
                 else
@@ -85,6 +91,11 @@ public class Boss_Script : MonoBehaviour {
             }
         }
 
+        if(_BatState == BatState.attack8)
+        {
+            Position_Fire20();
+        }
+
         if(_BatState == BatState.attack4)
         {
             if (attack4Reposition)
@@ -92,7 +103,6 @@ public class Boss_Script : MonoBehaviour {
                 transform.position = Vector3.Lerp(transform.position, attack4Dest.position, 0.75f * Time.deltaTime);
             }else
             {
-                Debug.Log("I should be shooting");
                 if(attack4Tick < attack4Timer)
                 {
                     attack4Tick += 1 * Time.deltaTime;
@@ -117,15 +127,82 @@ public class Boss_Script : MonoBehaviour {
         }
     }
 
-
-    void Fire4()
+    void Position_Fire20()
     {
-        Debug.Log("Shot: " + shotCount);
-        if(shotCount < 4)
+        if (attack4Reposition)
+        {
+            transform.position = Vector3.Lerp(transform.position, attack4Dest.position, 1.25f * Time.deltaTime);
+        }else
+        {
+          
+            Fire20();
+        }
+
+        if (fire20cooldown)
+        {
+
+            if(shot20Tick < v_fire20Cooldown)
+            {
+                Debug.Log("Cooldown active & counting");
+                shot20Tick += 1 * Time.deltaTime;
+            }else
+            {
+                shotCount = 0;
+                fire20cooldown = false;
+                _BatState = BatState.search;
+            }
+        }
+        
+    }
+
+    void Fire20()
+    {
+
+        if(shotCount < 20)
         {
             GameObject bull = GM.instance.GetBullets();
             Vector3 target = Vector3.zero;
 
+            if(shot20Tick < shot20Timer)
+            {
+                shot20Tick += Time.deltaTime;
+            }
+            else
+            {
+                var theta = -2 * Mathf.PI * shotCount / 20;
+                Vector3 tempV = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0) * 2;               
+
+
+                target = tempV;
+
+                Debug.Log(tempV);
+                Debug.DrawLine(transform.position, tempV, Color.blue, 3);
+            
+                bull.transform.position = this.transform.position;        
+                bull.GetComponent<BulletScript>().speed = 5;
+                bull.SetActive(true);
+                bull.GetComponent<Rigidbody2D>().velocity = target.normalized * 5;
+                shotCount++;
+                shot20Tick = 0;
+                
+            }
+        }else
+        {
+          
+            fire20cooldown = true;
+        }
+    }
+    void Fire4()
+    {
+       
+        if(shotCount < 4)
+        {
+
+
+            GameObject bull = GM.instance.GetBullets();
+            Vector3 target = Vector3.zero;
+
+            
             if (bull != null)
             {
                 if(shotCount == 0)
@@ -144,15 +221,14 @@ public class Boss_Script : MonoBehaviour {
                     target = Vector3.right*-1;
                 }
 
-
+                Debug.Log(target);
                 bull.transform.position = this.transform.position;
                 bull.GetComponent<BulletScript>().target = Vector3.up;
                 bull.GetComponent<BulletScript>().speed = 5;
                 bull.SetActive(true);
                 bull.GetComponent<Rigidbody2D>().velocity = target.normalized * 5;
             }
-            shotCount++;
-            
+            shotCount++;            
         }
         else
         {
@@ -199,7 +275,7 @@ public class Boss_Script : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("help");
-        if(_BatState == BatState.attack4)
+        if(_BatState == BatState.attack4 || _BatState == BatState.attack8)
         {
             
             attack4Reposition = false;
