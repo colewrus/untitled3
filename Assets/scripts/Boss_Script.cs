@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public enum BossType { bat, ghost, golem};
 
-public enum BatState { search, intro, attack4, attack8, summon, wait}
+public enum BatState { search, intro, attack4, attack8, summon, wait, dead}
 
 public class Boss_Script : MonoBehaviour {
 
@@ -16,7 +16,7 @@ public class Boss_Script : MonoBehaviour {
 
     public bool battleMode; //has the player triggered the boss fight
     public float health;
-
+    float maxHealth; //so we can compare during the fight
     public GameObject bossCanvas;
     public Slider healthBar;
     public Text healthBarText;
@@ -40,9 +40,21 @@ public class Boss_Script : MonoBehaviour {
     public List<Vector3> shot20Dir = new List<Vector3>(); //order will affect the order shit is fired in
     public float shot20Timer; //time between each bullet shot in the 20 bullet burst, this'll be fast
     float shot20Tick;
-    bool fire20cooldown;
+    public bool fire20cooldown;
     public float v_fire20Cooldown;
 
+    int randomSearchInt; //random index for search destinations
+    //Summon Variables
+    public List<GameObject> minions = new List<GameObject>();
+    public List<Transform> minionSpawn = new List<Transform>();
+    public Transform waitPos;
+    public float waitTimer;
+    float waitTick;
+    bool summoned; //have you already called for the new wave of bats?
+    GameObject deathObject;
+    float deathResetTimer; //how long before you get teleported out
+    bool deathTriggered; //so we just call some of the death stuff once
+    public Font BatBossFont;
 	// Use this for initialization
 	void Start () {
         destMax = SearchDests.Count;
@@ -52,12 +64,30 @@ public class Boss_Script : MonoBehaviour {
         Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         Physics2D.IgnoreCollision(GameObject.Find("floors").GetComponent<Collider2D>(), GetComponent<BoxCollider2D>());
         fire20cooldown = false;
+        summoned = false;
+        maxHealth = health;
     }
 	
 	// Update is called once per frame
 	void Update () {
         BatBehavior();
 	}
+
+    void NewIndex()
+    {
+        int temp = Random.Range(0, SearchDests.Count);
+        if (temp != randomSearchInt)
+        {
+            randomSearchInt = temp;
+            Debug.Log("Got it " + randomSearchInt);
+           
+        }
+        else
+        {
+            Debug.Log("rerolling");
+            NewIndex();
+        }
+    }
 
     void BatBehavior()
     {
@@ -68,27 +98,7 @@ public class Boss_Script : MonoBehaviour {
 
         if (_BatState == BatState.search)
         {
-            if(searchTick < searchTimer)
-            {
-                searchTick += 1 * Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, SearchDests[destCounter - 1].position, searchSpeed * Time.deltaTime);
-                                 
-            }
-            else
-            {
-                
-                if(destCounter == destMax)
-                {
-                    destCounter = 1;
-                    _BatState = BatState.attack8;
-                    attack4Reposition = true;
-                }
-                else
-                {
-                    destCounter++;
-                }                
-                searchTick = 0;
-            }
+            Search();
         }
 
         if(_BatState == BatState.attack8)
@@ -96,34 +106,139 @@ public class Boss_Script : MonoBehaviour {
             Position_Fire20();
         }
 
+        if(_BatState == BatState.summon)
+        {
+            Summon();
+        }
+
         if(_BatState == BatState.attack4)
         {
-            if (attack4Reposition)
+            Attack4();        
+        }
+        
+        if(_BatState == BatState.dead)
+        {
+            BatDead();
+        }
+    }
+
+    void Search()
+    {
+        if (searchTick < searchTimer)
+        {
+            searchTick += 1 * Time.deltaTime;
+            transform.position = Vector3.Lerp(transform.position, SearchDests[randomSearchInt].position, searchSpeed * Time.deltaTime);
+
+        }
+        else
+        {
+            if (destCounter == destMax)
             {
-                transform.position = Vector3.Lerp(transform.position, attack4Dest.position, 0.75f * Time.deltaTime);
-            }else
-            {
-                if(attack4Tick < attack4Timer)
+                destCounter = 0;
+                float roll = Random.RandomRange(0, 10);
+                Debug.Log("Boss Roll: " + roll);
+                if (roll < 5)
                 {
-                    attack4Tick += 1 * Time.deltaTime;
+                    _BatState = BatState.attack4;
                 }
                 else
                 {
-                    if(attack4Count < attack4Max)
-                    {
-                        Fire4();
-                    }
-                    else
-                    {
-                        attack4Count = 0;
-
-                        _BatState = BatState.search;
-                    }
-                                       
+                    if (roll > 4 && roll < 9)
+                        _BatState = BatState.attack8;
+                    if (roll > 8)
+                        _BatState = BatState.summon;
                 }
-                //Fire4();
+
+                attack4Reposition = true;
             }
-        
+            else
+            {
+                NewIndex();
+                searchTick = 0;
+                destCounter++;
+                Debug.Log("Destination Count " + destCounter);
+            }
+        }
+    }
+
+    void Attack4()
+    {
+        if (attack4Reposition)
+        {
+            transform.position = Vector3.Lerp(transform.position, attack4Dest.position, 0.75f * Time.deltaTime);
+        }
+        else
+        {
+            if (attack4Tick < attack4Timer)
+            {
+                attack4Tick += 1 * Time.deltaTime;
+            }
+            else
+            {
+                if (attack4Count < attack4Max)
+                {
+                    Fire4();
+                }
+                else
+                {
+                    attack4Count = 0;
+
+                    _BatState = BatState.search;
+                }
+            }
+        }
+    }
+
+    void Summon()
+    {
+        //got to summoning spot
+
+        //if tick < waitTimer and minions are active then count
+        //else go back to search
+        transform.position = Vector3.Lerp(transform.position, waitPos.position, searchSpeed * Time.deltaTime);
+
+        if (!summoned)
+        {
+            //spawn bats
+            for (int i = 0; i < minions.Count; i++)
+            {
+                minions[i].transform.position = minionSpawn[i].position;
+                minions[i].SetActive(true);
+            }
+            summoned = true;            
+        }
+
+        if(summoned && waitTick < waitTimer)
+        {
+            waitTick += Time.deltaTime;
+
+            if(waitTick%5 < 3)
+            {
+                CheckMinions();
+            }
+        }else
+        {
+            destCounter = 0;
+            _BatState = BatState.search;
+        }
+      
+    }
+
+    void CheckMinions()
+    {
+        int check = 0;
+        Debug.Log("Minon check " + check);
+        for(int i = 0; i < minions.Count-1; i++)
+        {
+            if (!minions[i].active)
+            {
+                check++;
+            }
+        }
+        if (check == minions.Count)
+        {
+            destCounter = 0;
+            _BatState = BatState.search;
         }
     }
 
@@ -133,12 +248,11 @@ public class Boss_Script : MonoBehaviour {
         {
             transform.position = Vector3.Lerp(transform.position, attack4Dest.position, 1.25f * Time.deltaTime);
         }else
-        {
-          
+        {          
             Fire20();
         }
 
-        if (fire20cooldown)
+        if (fire20cooldown && !attack4Reposition)
         {
 
             if(shot20Tick < v_fire20Cooldown)
@@ -170,15 +284,12 @@ public class Boss_Script : MonoBehaviour {
             else
             {
                 var theta = -2 * Mathf.PI * shotCount / 20;
-                Vector3 tempV = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0) * 2;               
-
-
-                target = tempV;
-
-                Debug.Log(tempV);
-                Debug.DrawLine(transform.position, tempV, Color.blue, 3);
+                Vector3 tempV = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0) * 2;
+                target = tempV;                
+                Debug.DrawLine(transform.position, transform.position + tempV, Color.blue, 3);
             
-                bull.transform.position = this.transform.position;        
+                bull.transform.position = this.transform.position;
+                bull.transform.localScale = new Vector3(1.5f, 1.5f, 0);
                 bull.GetComponent<BulletScript>().speed = 5;
                 bull.SetActive(true);
                 bull.GetComponent<Rigidbody2D>().velocity = target.normalized * 5;
@@ -221,7 +332,9 @@ public class Boss_Script : MonoBehaviour {
                     target = Vector3.right*-1;
                 }
 
-                Debug.Log(target);
+               
+                bull.transform.localScale = new Vector3(1.5f, 1.5f, 0);
+                Debug.Log(bull.transform.localScale);
                 bull.transform.position = this.transform.position;
                 bull.GetComponent<BulletScript>().target = Vector3.up;
                 bull.GetComponent<BulletScript>().speed = 5;
@@ -235,8 +348,8 @@ public class Boss_Script : MonoBehaviour {
             shotCount = 0;
             attack4Tick = 0;
             attack4Count++;
-            //_BatState = BatState.search;
-            //shotCount = 0;
+            _BatState = BatState.search;
+            shotCount = 0;
         }
 
 
@@ -268,17 +381,68 @@ public class Boss_Script : MonoBehaviour {
 
     public void ReceiveDamage(float d) 
     {
-        health -= d;
-        healthBar.value = health;
+        if(_BatState != BatState.summon)
+        {
+            health -= d;
+            healthBar.value = health;
+        }
+
+        if(health <= (maxHealth / 2))
+        {
+            _BatState = BatState.summon;
+        }
+
+        if(health <= 0)
+        {
+            SpriteRenderer tempR = gameObject.GetComponent<SpriteRenderer>();
+            tempR.enabled = false;
+            gameObject.GetComponent<BoxCollider2D>().enabled = false;
+            _BatState = BatState.dead;
+        }
+        
+    }
+
+    void BatDead()
+    {
+        if (!deathTriggered)
+        {
+            GameObject newText = new GameObject("winText", typeof(RectTransform));
+            var newTextComp = newText.AddComponent<Text>();
+            newTextComp.text = "Vile Bat Defeated";
+            newTextComp.alignment = TextAnchor.MiddleCenter;
+            newTextComp.font = BatBossFont;
+            newTextComp.fontSize = 24;
+            newTextComp.fontStyle = FontStyle.Bold;
+            
+
+            newText.transform.SetParent(GameObject.Find("Boss-Canvas").transform);
+            Debug.Log(new Vector2((Screen.width / 2), (Screen.height / 2)));
+            newText.AddComponent<Outline>();
+            newText.GetComponent<RectTransform>().anchoredPosition = new Vector2(6, 6);
+            deathTriggered = true;
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
+    {      
+        if(collision.transform.name == "attack4Pos")
+        {         
+            if (_BatState == BatState.attack4 || _BatState == BatState.attack8)
+            {
+                attack4Reposition = false;
+            }
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        Debug.Log("help");
-        if(_BatState == BatState.attack4 || _BatState == BatState.attack8)
+        if (collision.transform.name == "attack4Pos")
         {
-            
-            attack4Reposition = false;
+            if (_BatState == BatState.attack4 || _BatState == BatState.attack8)
+            {
+                attack4Reposition = false;
+            }
         }
     }
 

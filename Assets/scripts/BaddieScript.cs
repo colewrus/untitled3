@@ -28,7 +28,7 @@ public class BaddieScript : MonoBehaviour {
     float distCovered;
     float fracJourney;
     float journeyLength;
-    float tick;
+    public float tick;
 
     public float health; 
 
@@ -43,8 +43,20 @@ public class BaddieScript : MonoBehaviour {
     public bool shotLock;
 
 
+    
+    
+
+
+
     //Bat Behaviour Variables below
-    bool flutterBool;
+    public bool flutterBool;
+    public int shotTick;
+    Vector3 attackDest;
+    int flutterCount;
+    public int maxFlutter;
+    public float flutterTimer; //how long in between flutters?
+    public float batAttackSpeed;
+    float baseSpeed; //stored to return to base value after attack;
 
     private void Awake()
     {
@@ -57,6 +69,8 @@ public class BaddieScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        Debug.Log(1 << LayerMask.NameToLayer("player"));
+        baseSpeed = speed;
         shotLock = true;
         startPos = this.transform.position;
         moveBack = false;
@@ -70,15 +84,17 @@ public class BaddieScript : MonoBehaviour {
         }
 
         if(badType == BaddieType.bat)
-        {
+        {    
             destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
         }
         
         actualDest = destPos;
         playerSeen = false;
-        StartCoroutine("Awake_FireLock"); 
+        StartCoroutine("Awake_FireLock");
 
-   
+        shotTick = 0;
+        flutterCount = 0;
+        flutterBool = false;
     }
 	
 	// Update is called once per frame
@@ -127,32 +143,50 @@ public class BaddieScript : MonoBehaviour {
 
     void BatBehavior()
     {
-        if (tick < timer && !flutterBool)
+
+        if (!flutterBool)
         {
-            tick += Time.deltaTime;
-        }
-        else
+            if(tick < timer)
+            {
+                tick += Time.deltaTime;
+                shotTick = 0;
+            }else
+            {
+                EnemyScan();
+                if (shotTick == 20) //shot tick is for the raycast to check around enemy
+                {
+                    tick = 0;
+                }
+            }
+        }else
         {
-            destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
-            tick = 0;
-            
-            //pick a point, fly to it
-            //arrive
-            //flutter timer starts - enable collision with player
-                //flutter to the right
-                //give time to arrive
-                //flutter to the left
-                //give time to arrive
+            if(flutterCount < maxFlutter)
+            {
+                if(tick < flutterTimer)
+                {
+                    tick += 1 * Time.deltaTime;                   
+                }else
+                {                 
+                    //need to check for walls to make sure it somewhat makes sense
+                    int someValue = Random.Range(0, 2) * 2 - 1;
+
+                    destPos = transform.position + new Vector3(0.95f * someValue, 0, 0);
+                    tick = 0;
+                    flutterCount++;
+                }
+            }else
+            {
+                flutterBool = false;
+                speed = baseSpeed;
+                flutterCount = 0;
+            }
         }
+        
+
         if(transform.position != destPos)
         {
             transform.position = Vector3.Lerp(transform.position, destPos, speed * Time.deltaTime);
-        }
-        else
-        {
-            flutterBool = true;
-        }
-        
+        }       
 
     }
 
@@ -161,7 +195,7 @@ public class BaddieScript : MonoBehaviour {
         if(playerSeen){
             actualDest = GameObject.FindWithTag("Player").transform.position;
 
-            if(tick<timer){
+            if(tick<timer){ 
                 tick += Time.deltaTime;
             }else{
                 
@@ -182,24 +216,67 @@ public class BaddieScript : MonoBehaviour {
         }
     }
 
-    public void EnemyScan()
+    /*
+    private void OnDrawGizmos()
     {
-        RaycastHit2D hit_N = Physics2D.Raycast(transform.position, new Vector3(0, 1, 0), 2.5f);
-        RaycastHit2D hit_NE = Physics2D.Raycast(transform.position, new Vector3(0.5f, 0.5f, 0) * 2);
-        RaycastHit2D hit_NW = Physics2D.Raycast(transform.position, new Vector3(-0.5f, 0.5f, 0) * 2);
-        RaycastHit2D hit_E = Physics2D.Raycast(transform.position, new Vector3(1, 0, 0) * 2.5f);
-        RaycastHit2D hit_S = Physics2D.Raycast(transform.position, new Vector3(0, -1, 0) * 2.5f);
-        RaycastHit2D hit_SE = Physics2D.Raycast(transform.position, new Vector3(0.5f, -0.5f, 0) * 2);
-        RaycastHit2D hit_SW = Physics2D.Raycast(transform.position, new Vector3(-0.5f, -0.5f, 0) * 2.5f);
-        RaycastHit2D hit_W = Physics2D.Raycast(transform.position, new Vector3(-1, 0, 0) * 2.5f);
 
-        Debug.DrawRay(transform.position, new Vector3(1, 0, 0) * 0.5f, Color.cyan);
-        Debug.DrawRay(transform.position, new Vector3(0, -1, 0) * 2.5f, Color.red);
-        if (hit_N.collider.tag == "Player" || hit_E.collider.tag == "Player" || hit_NE.collider.tag == "Player" || hit_SE.collider.tag == "Player" || hit_S.collider.tag == "Player" || hit_SW.collider.tag == "Player" || hit_W.collider.tag == "Player" || hit_NW.collider.tag == "Player")
-        {
+        Color tempColor = Color.green;
+        tempColor.a = 0.35f;
+        Gizmos.color = tempColor;
+        Gizmos.DrawSphere(transform.position, 2.75f);
+    }
+    */
+
+    public void EnemyScan()
+    {        
+        Collider2D[] hitCollider;
+        hitCollider = Physics2D.OverlapCircleAll(transform.position, 2.25f, 1 << LayerMask.NameToLayer("player"));
+        for (var i = 0; i < hitCollider.Length; i++)
+        {             
             playerSeen = true;
-            Debug.Log(hit_S.collider.name);
+            flutterBool = true;
+            destPos = hitCollider[i].transform.position;
+            speed = batAttackSpeed;
+            tick = 0;
         }
+
+        if(hitCollider.Length == 0)
+        {
+            destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+            tick = 0;
+        }
+        Debug.Log("hits " + hitCollider.Length);
+        
+
+        /*
+        if (shotTick < 20)
+        {
+            var theta = -2 * Mathf.PI * shotTick / 20;
+            Vector3 tempV = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0) * 3;
+
+            Debug.DrawLine(transform.position, transform.position + tempV, Color.yellow, Vector3.Distance(transform.position, transform.position + tempV));
+
+            shotTick++;
+            RaycastHit2D tempHit = Physics2D.Raycast(transform.position + new Vector3(0.5f, -0.5f, 0), transform.position + 
+                tempV, Vector3.Distance(transform.position, transform.position + tempV),1<<LayerMask.NameToLayer("player"));
+            if(tempHit.collider != null)
+            {
+                              
+                playerSeen = true;
+                // store destination
+                flutterBool = true;              
+                destPos = tempHit.point;
+            }else
+            {
+                //sets new destination for player
+                destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+            }
+        }else
+        {
+            
+        }
+        */
+
 
     }
 

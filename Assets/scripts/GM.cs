@@ -157,22 +157,13 @@ public class GM : MonoBehaviour {
 
     }
 
-    public void IntroRun(){
-        /*see that blob, he's a problem blob, he don't see you just yet but when you does you're gonna need to put him in the dirt
-         *Give Control
-         *Player dies to blob: wow, now that's a bit embarassing, here let me help you with that
-         *Player shoots blob:
-         *
-
-        */
-    }
-
     public GameObject GetBullets()
     {
         for(int i= 0; i < BulletPool.Count; i++)
         {
             if (!BulletPool[i].activeInHierarchy)
             {
+                BulletPool[i].transform.localScale = Vector3.one;
                 return BulletPool[i];
             }
         }

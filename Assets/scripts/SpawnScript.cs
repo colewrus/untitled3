@@ -69,18 +69,15 @@ public class PlacedSpawn
     public void EnemyKilled()
     {
         
-        waveCount--;
-        Debug.Log("Wave Count " + waveCount);
+        waveCount--;   
         if(waveCount <= 0)
-        {
-            
+        {            
             if(spawnDoor!=null)
                 spawnDoor.SetActive(false);
 
             if (activateGate)
             {
-                gate.GetComponent<DoorScript>().activeDoor = true;
-                spawnDoor.SetActive(false);
+                gate.GetComponent<DoorScript>().activeDoor = true;        
 
                 if (gate.GetComponent<DoorScript>().boolBarrier)
                 {

@@ -27,7 +27,7 @@ public class MathScript : MonoBehaviour {
         {
             var theta = 2 * Mathf.PI * i / 20;
             Vector2 tempV = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta)) * 3;
-            Debug.Log(tempV);
+            
             //Debug.DrawLine(new Vector2(0, 0), tempV, Color.red, 15);
         }
 

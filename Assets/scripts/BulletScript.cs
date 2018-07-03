@@ -27,7 +27,7 @@ public class BulletScript : MonoBehaviour {
         {
             gameObject.active = false;
         }
-            
+        //transform.localScale = Vector3.one;            
     }
 
 }

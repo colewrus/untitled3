@@ -99,8 +99,7 @@ public class PlayerScript : MonoBehaviour {
         myAudio = GetComponent<AudioSource>();
         reloading = false;
         lookAtBoss = false;
-        moveLock = false;
-        
+        moveLock = false;        
 	}
 
 
@@ -155,9 +154,7 @@ public class PlayerScript : MonoBehaviour {
                     Shoot();
                     StartCoroutine("c_Reload");
                 } 
-            }
-          
- 
+            }       
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -165,26 +162,22 @@ public class PlayerScript : MonoBehaviour {
             if(!reloading)
                 StartCoroutine("c_Reload");
         }
-
         if(bulletCount > 6)
         {
             bulletCount = 6;
         }
-        LadderMovement();
+      
         Reticule();
 	}
 
     public List<RaycastResult> RaycastMouse()
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current);
-
         pointerData.position = Input.mousePosition;
-
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerData, results);
         Debug.Log(results.Count);
         return results;
-
     }
 
     void FadeControl()
@@ -196,9 +189,7 @@ public class PlayerScript : MonoBehaviour {
                 fadeOut = true;
                 fadeTime = 0;
                 fadeIn = false;
-
             }
-
             fadeTime += fadeModifier * Time.deltaTime;
             fadeOpacity = Mathf.Lerp(0, 1, fadeTime);
             fadeColor = fadeImg.color;
@@ -211,7 +202,6 @@ public class PlayerScript : MonoBehaviour {
             if (fadeTime > 1)
             {
                 fadeOut = false;
-
             }
             fadeTime += fadeModifier * Time.deltaTime;
             fadeOpacity = Mathf.Lerp(1, 0, fadeTime);
@@ -255,14 +245,11 @@ public class PlayerScript : MonoBehaviour {
                 yield return new WaitForSeconds(EffectsClips[3].length);
                 myAudio.PlayOneShot(EffectsClips[4], 1);
             }
-        }
-        
-        
+        }    
     }
 
     void Shoot()
     {
-
         Vector2 rayDest = Input.mousePosition;
        
         rayDest = Camera.main.ScreenToWorldPoint(rayDest);
@@ -278,15 +265,26 @@ public class PlayerScript : MonoBehaviour {
             part.Play();
             
             if(hit2d.collider.transform.tag == "enemies")
-            {
-                //check for their health;
-                
+            {                       
                 if(hit2d.collider.gameObject.GetComponent<BaddieScript>().health - damage <= 0){
-                    enemyCollider.Remove(hit2d.collider);
-                    Destroy(hit2d.collider.gameObject);
 
-                    SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
-                    tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
+
+                    if(hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject == null)
+                    {
+                        hit2d.transform.gameObject.SetActive(false);
+                    }
+                   
+
+
+                    if (hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject != null) //was flagging error from boss bat minions
+                    {
+                        SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
+                        tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
+                        enemyCollider.Remove(hit2d.collider);
+                        Destroy(hit2d.collider.gameObject);
+                    }
+                    
+                    
 
                     /* is this necessary? Why were we looking for the Parent Object
                     if (hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject!= null)
@@ -318,7 +316,6 @@ public class PlayerScript : MonoBehaviour {
 
         Ray myRay = new Ray(transform.position, destinationActual*gunRange);
         Physics2D.Raycast(transform.position, destinationActual, gunRange);  
-
         Debug.DrawRay(transform.position, destinationActual*gunRange, Color.cyan);
         
        
@@ -354,21 +351,13 @@ public class PlayerScript : MonoBehaviour {
                 
             }
                 
-        }
-
-        if(Input.GetKeyDown(KeyCode.Alpha0)){
-            Debug.Log(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
-        }
+        }         
 
         if (Input.GetKey(KeyCode.S))
         {
             if (onPlatform)
             {
-
-                this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-                //GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;
-                //currentPlatform.GetComponent<Collider2D>().isTrigger = true;
+                this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;  
                 Invoke("DownThrough", 0.41f);                
             }
         }
@@ -403,33 +392,7 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    void LadderMovement()
-    {
-        if (onLadder)
-        {
-            rb.gravityScale = 0;
-          
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            {
-                rb.velocity = transform.up * 2.75f;
-            }
-            if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                rb.velocity = Vector3.zero;
-            }
-            if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                rb.velocity = transform.up * -2.75f;
-            }
-            if(Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                rb.velocity = Vector3.zero;
-            }
-        }else
-        {
-            rb.gravityScale = 1;
-        }
-    }
+
 
   
 
@@ -452,9 +415,30 @@ public class PlayerScript : MonoBehaviour {
         bulletZone.transform.position = DoorObj.GetComponent<DoorScript>().bulletZoneReset.position;
     }
 
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.transform.parent != null)
+        {
+            if (collision.transform.parent.tag == "enemies")
+            {
+                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true; //bad guy sees the player
+                if (!collision.transform.parent.GetComponent<BaddieScript>().firstSeen)
+                {
+                    collision.transform.parent.GetComponent<BaddieScript>().pub_Fire();
+                    collision.transform.parent.GetComponent<BaddieScript>().run_FirstSeen();
+                    collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true;
+                }
+
+                if (collision.transform.name == "triggerDetection") //hit box on enemies for on-touch damage
+                {
+                    StartCoroutine("DamageFlash");
+                }
+            }
+        }
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
         if(collision.transform.tag == "door")
         {
             if (collision.gameObject.GetComponent<DoorScript>().activeDoor)
@@ -510,23 +494,8 @@ public class PlayerScript : MonoBehaviour {
         {
             Vector3 dir = (gameObject.GetComponent<CapsuleCollider2D>().bounds.ClosestPoint(collision.transform.position) - transform.position);
             rb.AddForce(new Vector2(-8, 1), ForceMode2D.Impulse);
-            Debug.Log(new Vector2(dir.x, dir.y).normalized*15);
+            
             horiz = 0.5f * dir.x;
-            //Vector3 dir = (collision.transform.position - transform.position);
-            //Debug.Log(dir.normalized);
-
-            //Debug.Break();
-            /*
-            RaycastHit2D hit;
-            hit = Physics2D.Raycast(transform.position, transform.forward, gameObject.GetComponent<CapsuleCollider2D>().size.x);
-            Debug.DrawLine(transform.position, transform.forward * gameObject.GetComponent<CapsuleCollider2D>().size.x, Color.green);
-            Debug.Log(gameObject.GetComponent<CapsuleCollider2D>().size.x);
-            if (hit.collider != null)
-            {
-                Debug.Log(hit.point);
-            }
-            */
-          
             StartCoroutine("DamageFlash");
         }
     }
