@@ -71,6 +71,7 @@ public class PlayerScript : MonoBehaviour {
     Color fadeColor;
     public bool fadeIn;
     bool fadeOut;
+    float doorFadeOut; //how long does the fade take for each door?
 
     private void Awake()
     {
@@ -184,13 +185,13 @@ public class PlayerScript : MonoBehaviour {
     {
         if (fadeIn)
         {
-            if (fadeTime > 1.45f) //this value determines how long the fade will sit before transitioning away
-            {
-                fadeOut = true;
+            if (fadeTime > fadeModifier) //this value determines how long the fade will sit before transitioning away
+            {                
                 fadeTime = 0;
                 fadeIn = false;
+                return;
             }
-            fadeTime += fadeModifier * Time.deltaTime;
+            fadeTime += 1 * Time.deltaTime;
             fadeOpacity = Mathf.Lerp(0, 1, fadeTime);
             fadeColor = fadeImg.color;
             fadeColor.a = fadeOpacity;
@@ -198,10 +199,12 @@ public class PlayerScript : MonoBehaviour {
         }
 
         if (fadeOut)
-        {
-            if (fadeTime > 1)
+        {          
+            if (fadeTime > fadeModifier)
             {
+                fadeTime = 0;
                 fadeOut = false;
+                return;
             }
             fadeTime += fadeModifier * Time.deltaTime;
             fadeOpacity = Mathf.Lerp(1, 0, fadeTime);
@@ -410,8 +413,12 @@ public class PlayerScript : MonoBehaviour {
     {
         fadeIn = true;
         //play the door sound
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(fadeModifier);
         transform.position = DoorObj.GetComponent<DoorScript>().dest.position;
+        
+        yield return new WaitForSeconds(fadeModifier/2);
+        fadeOut = true;
+       
         bulletZone.transform.position = DoorObj.GetComponent<DoorScript>().bulletZoneReset.position;
     }
 

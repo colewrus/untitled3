@@ -30,7 +30,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4231829929357974
 Transform:
   m_ObjectHideFlags: 1
@@ -38,8 +38,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1952264349032696}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.63, y: 3.13, z: -0.14257812}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalPosition: {x: -2.873, y: 2.472, z: -0.14257812}
+  m_LocalScale: {x: 4, y: 4, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -115,8 +115,8 @@ MonoBehaviour:
   moveBack: 0
   moveZone: {fileID: 0}
   ParentObject: {fileID: 0}
-  timer: 2.5
-  speed: 1.15
+  timer: 2.1
+  speed: 1.1
   tick: 0
   health: 2
   bullet: {fileID: 1903121727310156, guid: d3e90e57c9b2eab49811e7cccf389d08, type: 2}
@@ -129,8 +129,8 @@ MonoBehaviour:
   flutterBool: 0
   shotTick: 0
   maxFlutter: 3
-  flutterTimer: 0.65
-  batAttackSpeed: 5
+  flutterTimer: 0.85
+  batAttackSpeed: 3
 --- !u!212 &212450770294626910
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -165,7 +165,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 50
   m_Sprite: {fileID: 21300000, guid: c05758bcded44004ca161f8ed247d140, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
