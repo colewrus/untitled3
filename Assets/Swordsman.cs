@@ -7,30 +7,34 @@ public class Swordsman : MonoBehaviour {
 
     public GameObject target;
     public float moveSpeed;
-    bool playerSeen;
-    bool attack;
+    public bool playerSeen;
+    public bool attack;
 
     bool attackStart; //primarily to control the animation of the attack
 
     public GameObject swordObj;//this is the collider for the sword
-
+    Animator myAnim;
      
     // Use this for initialization
     void Start () {
         playerSeen = false;
         attack = false;
+        myAnim = this.GetComponent<Animator>();
+        swordObj.SetActive(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (playerSeen && !attack)
         {
+            //ok but limit the y movement
             transform.position += (target.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime;
             Vector3 pos = (target.transform.position - transform.position);
 
-            if(pos.magnitude < 2)
+            if(pos.magnitude < 1.75f)
             {
                 attack = true;
+                
             }
 
             //run the baddie attack
@@ -39,6 +43,7 @@ public class Swordsman : MonoBehaviour {
                 //Start animation and run through animation events?
                 if (!attackStart)
                 {
+                    myAnim.SetTrigger("knightWindUp");
                     //start animation
                 }
                 attackStart = true;
@@ -58,9 +63,29 @@ public class Swordsman : MonoBehaviour {
         }
     }
 
-    public void SwordActive()
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        Debug.Log("sweet");
+        if(collision.transform.tag == "Player")
+        {
+            playerSeen = false;
+            attack = false;       
+            Debug.Log("reset");
+            //reset the other triggers too
+            myAnim.ResetTrigger("knightAttack");
+            myAnim.ResetTrigger("knightWindUp");
+
+        }
+    }
+
+    public void SetTrigger(string TriggerID)
+    {
+        myAnim.SetTrigger(TriggerID);
+    }
+
+   public void AttackEnd()
+    {
+        attack = false;
+        attackStart = false;
     }
 
 
