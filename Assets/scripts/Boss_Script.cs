@@ -60,7 +60,7 @@ public class Boss_Script : MonoBehaviour {
         destMax = SearchDests.Count;
         destCounter = 1;
         searchTick = 0;
-        Debug.Log("Dest Max: " + destMax);
+      
         Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         Physics2D.IgnoreCollision(GameObject.Find("floors").GetComponent<Collider2D>(), GetComponent<BoxCollider2D>());
         fire20cooldown = false;
@@ -78,13 +78,10 @@ public class Boss_Script : MonoBehaviour {
         int temp = Random.Range(0, SearchDests.Count);
         if (temp != randomSearchInt)
         {
-            randomSearchInt = temp;
-            Debug.Log("Got it " + randomSearchInt);
-           
+            randomSearchInt = temp;          
         }
         else
         {
-            Debug.Log("rerolling");
             NewIndex();
         }
     }
@@ -136,7 +133,6 @@ public class Boss_Script : MonoBehaviour {
             {
                 destCounter = 0;
                 float roll = Random.RandomRange(0, 10);
-                Debug.Log("Boss Roll: " + roll);
                 if (roll < 5)
                 {
                     _BatState = BatState.attack4;
@@ -156,7 +152,6 @@ public class Boss_Script : MonoBehaviour {
                 NewIndex();
                 searchTick = 0;
                 destCounter++;
-                Debug.Log("Destination Count " + destCounter);
             }
         }
     }
@@ -227,9 +222,10 @@ public class Boss_Script : MonoBehaviour {
     void CheckMinions()
     {
         int check = 0;
-        Debug.Log("Minon check " + check);
-        for(int i = 0; i < minions.Count-1; i++)
+        
+        for(int i = 0; i < minions.Count; i++)
         {
+            
             if (!minions[i].active)
             {
                 check++;
@@ -257,7 +253,6 @@ public class Boss_Script : MonoBehaviour {
 
             if(shot20Tick < v_fire20Cooldown)
             {
-                Debug.Log("Cooldown active & counting");
                 shot20Tick += 1 * Time.deltaTime;
             }else
             {
@@ -334,7 +329,6 @@ public class Boss_Script : MonoBehaviour {
 
                
                 bull.transform.localScale = new Vector3(1.5f, 1.5f, 0);
-                Debug.Log(bull.transform.localScale);
                 bull.transform.position = this.transform.position;
                 bull.GetComponent<BulletScript>().target = Vector3.up;
                 bull.GetComponent<BulletScript>().speed = 5;
@@ -360,15 +354,12 @@ public class Boss_Script : MonoBehaviour {
         yield return new WaitForSeconds(1.15f);
         shotCount = 0;
         Fire4();
-        Debug.Log("co_1");
         yield return new WaitForSeconds(1.15f);
         shotCount = 0;
         Fire4();
-        Debug.Log("co_2");
         yield return new WaitForSeconds(1.15f);
         shotCount = 0;
         Fire4();
-        Debug.Log("co_3");
     }
 
     public void InitCanvas()
@@ -416,7 +407,6 @@ public class Boss_Script : MonoBehaviour {
             
 
             newText.transform.SetParent(GameObject.Find("Boss-Canvas").transform);
-            Debug.Log(new Vector2((Screen.width / 2), (Screen.height / 2)));
             newText.AddComponent<Outline>();
             newText.GetComponent<RectTransform>().anchoredPosition = new Vector2(6, 6);
             deathTriggered = true;
@@ -433,6 +423,21 @@ public class Boss_Script : MonoBehaviour {
                 attack4Reposition = false;
             }
         }
+
+        if(collision.transform.tag == "hitbox")
+        {
+            if (collision.transform.GetComponent<Melee_Hitbox>().armed)
+            {
+                if (health - collision.transform.GetComponent<Melee_Hitbox>().Damage <= 0)
+                {
+                    ReceiveDamage(collision.transform.GetComponent<Melee_Hitbox>().Damage);
+                }
+                else
+                {
+                    ReceiveDamage(collision.transform.GetComponent<Melee_Hitbox>().Damage);
+                }
+            }
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -442,6 +447,21 @@ public class Boss_Script : MonoBehaviour {
             if (_BatState == BatState.attack4 || _BatState == BatState.attack8)
             {
                 attack4Reposition = false;
+            }
+        }
+        if (collision.transform.tag == "hitbox")
+        {
+            if (collision.transform.GetComponent<Melee_Hitbox>().armed)
+            {
+                if (health - collision.transform.GetComponent<Melee_Hitbox>().Damage <= 0)
+                {
+                    ReceiveDamage(collision.transform.GetComponent<Melee_Hitbox>().Damage);
+                }
+                else
+                {
+                    ReceiveDamage(collision.transform.GetComponent<Melee_Hitbox>().Damage);
+                }
+                collision.transform.GetComponent<Melee_Hitbox>().armed = false;
             }
         }
     }

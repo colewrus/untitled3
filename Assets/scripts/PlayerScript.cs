@@ -73,6 +73,17 @@ public class PlayerScript : MonoBehaviour {
     bool fadeOut;
     float doorFadeOut; //how long does the fade take for each door?
 
+    //control the walking sounds
+    public float walkTimer;
+    float walkTick;
+
+    //combat control
+    public float attackSpeed;
+    float attackTick;
+
+    //player animation stuph
+    GameObject swingObj;
+
     private void Awake()
     {
         instance = this;
@@ -80,7 +91,7 @@ public class PlayerScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-
+        Debug.Log(WalkingClips[0].length);
         jumpCount = 0;
         rb = this.GetComponent<Rigidbody2D>();
         aimCollider = aimReticule.GetComponent<Collider2D>();
@@ -100,7 +111,8 @@ public class PlayerScript : MonoBehaviour {
         myAudio = GetComponent<AudioSource>();
         reloading = false;
         lookAtBoss = false;
-        moveLock = false;        
+        moveLock = false;
+        swingObj = gameObject.transform.Find("swing").gameObject;
 	}
 
 
@@ -137,11 +149,21 @@ public class PlayerScript : MonoBehaviour {
         if(!moveLock)
             PlayerMove();
 
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (!moveLock) //need to change to a attack gate
+            {
+                StartCoroutine("Attack");
+            }
+            
+        }
+        /*
         if (Input.GetMouseButtonDown(0))
         {
 
             if(!fireLock){
-                reloading = false;
+                
                 if (bulletCount <= 0)
                 {
                     return;
@@ -151,7 +173,8 @@ public class PlayerScript : MonoBehaviour {
                     Shoot();
                     StopCoroutine("c_Reload");
                 }else
-                {              
+                {
+                    StopCoroutine("c_Reload");           
                     Shoot();
                     StartCoroutine("c_Reload");
                 } 
@@ -160,16 +183,30 @@ public class PlayerScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if(!reloading)
+            if (!reloading)
+            {                
                 StartCoroutine("c_Reload");
+                reloading = true;
+            }               
         }
+
         if(bulletCount > 6)
         {
             bulletCount = 6;
         }
       
-        Reticule();
+        */
 	}
+
+    IEnumerator Attack()
+    {
+       
+        moveLock = true;
+        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+        swingObj.GetComponent<Animator>().SetTrigger("swing");
+        yield return new WaitForSeconds(attackSpeed);
+        moveLock = false;    
+    }
 
     public List<RaycastResult> RaycastMouse()
     {
@@ -253,6 +290,8 @@ public class PlayerScript : MonoBehaviour {
 
     void Shoot()
     {
+        reloading = false;
+
         Vector2 rayDest = Input.mousePosition;
        
         rayDest = Camera.main.ScreenToWorldPoint(rayDest);
@@ -296,7 +335,7 @@ public class PlayerScript : MonoBehaviour {
                         tempScript.p_Waves[tempScript.waveCounter-1].EnemyKilled();  
                     }
                     */
-                    GM.instance.RemoveEnemy();
+             
 
                 }else{
                     hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
@@ -330,31 +369,62 @@ public class PlayerScript : MonoBehaviour {
 
     void PlayerMove()
     {
-        horiz = Input.GetAxis("Horizontal");   
+        horiz = Input.GetAxis("Horizontal");
+        if (!moveLock)
+        {
+            rb.velocity = new Vector3(horiz * speed, Mathf.Clamp(rb.velocity.y, -10, 10));
+        }else
+        {
+            
+            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+ 
+        }
+        
 
-        rb.velocity = new Vector3(horiz * speed, Mathf.Clamp(rb.velocity.y, -10, 10));
+        if(horiz < 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+
+        if(horiz > 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+
         if(rb.velocity.y == 0 && rb.velocity.x != 0 && !walkingSource.isPlaying)
         {
-            walkingSource.volume = Random.Range(0.25f, 0.55f);
-            walkingSource.pitch = Random.Range(0.6f, 1.1f);
-            walkingSource.Play();
+            if(walkTick < walkTimer)
+            {
+                walkTick += 1 * Time.deltaTime;
+            }else
+            {
+                walkingSource.volume = Random.Range(0.25f, 0.35f);
+                walkingSource.pitch = Random.Range(0.6f, 1.1f);
+                walkingSource.Play();
+                walkTick = 0;
+            }
+            
+  
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (!onLadder)
             {
-                
                 if(jumpCount < 2)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, 0);
                     rb.AddForce(Vector2.up * (jumpPower + jumpCount), ForceMode2D.Impulse);
                     jumpCount++;
                 }
-                
             }
-                
-        }         
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            if(jumpCount < 2)
+               rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y/2);
+        }        
 
         if (Input.GetKey(KeyCode.S))
         {
@@ -393,6 +463,8 @@ public class PlayerScript : MonoBehaviour {
             keys.Add(collision.gameObject);
             collision.gameObject.SetActive(false);
         }
+
+
     }
 
 
@@ -413,7 +485,10 @@ public class PlayerScript : MonoBehaviour {
     {
         fadeIn = true;
         //play the door sound
+       
         yield return new WaitForSeconds(fadeModifier);
+        myAudio.PlayOneShot(EffectsClips[5], 1.0f);
+        //play close sound
         transform.position = DoorObj.GetComponent<DoorScript>().dest.position;
         
         yield return new WaitForSeconds(fadeModifier/2);
@@ -439,7 +514,7 @@ public class PlayerScript : MonoBehaviour {
 
                 if (collision.transform.name == "triggerDetection") //hit box on enemies for on-touch damage
                 {
-                    StartCoroutine("DamageFlash");
+                   // StartCoroutine("DamageFlash");
                 }
             }
         }
@@ -450,15 +525,18 @@ public class PlayerScript : MonoBehaviour {
         {
             if (collision.gameObject.GetComponent<DoorScript>().activeDoor)
             {
+                fadeIn = true;
                 IEnumerator tempCo = _DoorTransfer(collision.gameObject);
                 StartCoroutine(tempCo);
             }
 
-            if(collision.gameObject.GetComponent<DoorScript>().key == keys[0])
+            if(collision.gameObject.GetComponent<DoorScript>().key != null)
             {
-                if(!collision.gameObject.GetComponent<DoorScript>().BossFightLocked) //make sure you can't open the door once you init the boss fight
-                    collision.gameObject.GetComponent<DoorScript>().OpenBossDoor();
-                //collision.gameObject.SetActive(false);
+                if(collision.gameObject.GetComponent<DoorScript>().key == keys[0])
+                {
+                    if (!collision.gameObject.GetComponent<DoorScript>().BossFightLocked) //make sure you can't open the door once you init the boss fight
+                        collision.gameObject.GetComponent<DoorScript>().OpenBossDoor();
+                }               
             }
            
         }
@@ -484,7 +562,7 @@ public class PlayerScript : MonoBehaviour {
                 
                 if (collision.transform.name == "triggerDetection") //hit box on enemies for on-touch damage
                 {
-                    StartCoroutine("DamageFlash");
+                    //StartCoroutine("DamageFlash");
                 }
             }
         }

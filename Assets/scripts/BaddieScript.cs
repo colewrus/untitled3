@@ -69,14 +69,14 @@ public class BaddieScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Debug.Log(1 << LayerMask.NameToLayer("player"));
+        
         baseSpeed = speed;
         shotLock = true;
         startPos = this.transform.position;
         moveBack = false;
         actualDest = destPos;
         startTime = Time.time;
-        Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
+        //Physics2D.IgnoreCollision(GameObject.Find("player").GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         
         if(badType == BaddieType.skull)
         {
@@ -193,26 +193,19 @@ public class BaddieScript : MonoBehaviour {
     void BlobBehavior(){
 
         if(playerSeen){
-            actualDest = GameObject.FindWithTag("Player").transform.position;
-
-            if(tick<timer){ 
-                tick += Time.deltaTime;
-            }else{
-                
-                Vector2 tempV2 = new Vector2((actualDest.x - transform.position.x), 1.2f);
-                tempV2 = tempV2.normalized* speed;
+         
+            if(tick < timer){ 
+                tick += 1 * Time.deltaTime;
+              
+            }else
+            {
+                gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                actualDest = GameObject.FindWithTag("Player").transform.position;
+                Vector2 tempV2 = new Vector2((actualDest.x - transform.position.x), 1)*speed;
+                Debug.Log(tempV2);
                 gameObject.GetComponent<Rigidbody2D>().AddForce(tempV2, ForceMode2D.Impulse);
-                
                 tick = 0;
             }
-
-
-
-            /*
-             * distCovered = (Time.time - startTime) * speed;
-            fracJourney = distCovered / journeyLength;
-            transform.position = Vector3.Lerp(transform.position, actualDest, speed * Time.deltaTime);
-            */
         }
     }
 
@@ -244,42 +237,67 @@ public class BaddieScript : MonoBehaviour {
         {
             destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
             tick = 0;
-        }
-        Debug.Log("hits " + hitCollider.Length);
-        
-
-        /*
-        if (shotTick < 20)
-        {
-            var theta = -2 * Mathf.PI * shotTick / 20;
-            Vector3 tempV = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0) * 3;
-
-            Debug.DrawLine(transform.position, transform.position + tempV, Color.yellow, Vector3.Distance(transform.position, transform.position + tempV));
-
-            shotTick++;
-            RaycastHit2D tempHit = Physics2D.Raycast(transform.position + new Vector3(0.5f, -0.5f, 0), transform.position + 
-                tempV, Vector3.Distance(transform.position, transform.position + tempV),1<<LayerMask.NameToLayer("player"));
-            if(tempHit.collider != null)
-            {
-                              
-                playerSeen = true;
-                // store destination
-                flutterBool = true;              
-                destPos = tempHit.point;
-            }else
-            {
-                //sets new destination for player
-                destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
-            }
-        }else
-        {
-            
-        }
-        */
-
-
+        } 
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.tag == "hitbox")
+        {
+            if (collision.GetComponent<Melee_Hitbox>().armed)
+            {
+                if(health > 0)
+                {
+                    health -= collision.GetComponent<Melee_Hitbox>().Damage;
+                    return;
+                }else
+                {
+                    if(gameObject.GetComponent<BaddieScript>().ParentObject == null)
+                    {
+                        gameObject.SetActive(false);
+                    }
+
+                    if (gameObject.GetComponent<BaddieScript>().ParentObject != null) //was flagging error from boss bat minions
+                    {
+                        SpawnScript tempScript = gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
+                        tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
+                        gameObject.SetActive(false);
+                    }
+                }             
+            }
+            collision.GetComponent<Melee_Hitbox>().armed = false;        
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.transform.tag == "hitbox")
+        {
+            if (collision.GetComponent<Melee_Hitbox>().armed)
+            {
+                if (health > 0)
+                {
+                    health -= collision.GetComponent<Melee_Hitbox>().Damage;
+                    return;
+                }
+                else
+                {
+                    if (gameObject.GetComponent<BaddieScript>().ParentObject == null)
+                    {
+                        gameObject.SetActive(false);
+                    }
+
+                    if (gameObject.GetComponent<BaddieScript>().ParentObject != null) //was flagging error from boss bat minions
+                    {
+                        SpawnScript tempScript = gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
+                        tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
+                        gameObject.SetActive(false);
+                    }
+                }
+            }
+            collision.GetComponent<Melee_Hitbox>().armed = false;
+        }
+    }
 
     IEnumerator Awake_FireLock()
     {

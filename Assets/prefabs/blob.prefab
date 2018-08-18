@@ -236,7 +236,8 @@ MonoBehaviour:
   moveZone: {fileID: 0}
   ParentObject: {fileID: 0}
   timer: 1
-  speed: 2.2
+  speed: 0.9
+  tick: 0
   health: 5
   bullet: {fileID: 0}
   BulletSpeed: 5
@@ -245,6 +246,11 @@ MonoBehaviour:
   baseColor: {r: 1, g: 1, b: 1, a: 1}
   firstSeen: 0
   shotLock: 0
+  flutterBool: 0
+  shotTick: 0
+  maxFlutter: 0
+  flutterTimer: 0
+  batAttackSpeed: 0
 --- !u!212 &212337770458679680
 SpriteRenderer:
   m_ObjectHideFlags: 1

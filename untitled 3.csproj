@@ -310,6 +310,9 @@
   <ItemGroup>
     <Compile Include="Assets\DoorScript.cs" />
     <Compile Include="Assets\MathScript.cs" />
+    <Compile Include="Assets\MeleeTest_P.cs" />
+    <Compile Include="Assets\Melee_Bad.cs" />
+    <Compile Include="Assets\Melee_Hitbox.cs" />
     <Compile Include="Assets\paddle\ballScript.cs" />
     <Compile Include="Assets\paddle\PaddleScript.cs" />
     <Compile Include="Assets\scripts\BaddieScript.cs" />
