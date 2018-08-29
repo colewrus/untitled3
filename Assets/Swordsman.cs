@@ -33,8 +33,7 @@ public class Swordsman : MonoBehaviour {
 
             if(pos.magnitude < 1.75f)
             {
-                attack = true;
-                
+                attack = true;                
             }
 
             //run the baddie attack

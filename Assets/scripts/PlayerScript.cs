@@ -80,6 +80,8 @@ public class PlayerScript : MonoBehaviour {
     //combat control
     public float attackSpeed;
     float attackTick;
+    bool attackGate;
+    public GameObject sword;
 
     //player animation stuph
     GameObject swingObj;
@@ -113,6 +115,9 @@ public class PlayerScript : MonoBehaviour {
         lookAtBoss = false;
         moveLock = false;
         swingObj = gameObject.transform.Find("swing").gameObject;
+        attackGate = false;
+        //Set the offset from the player for the sword
+        Debug.Log(Vector3.Distance(transform.position, sword.transform.position));
 	}
 
 
@@ -146,13 +151,12 @@ public class PlayerScript : MonoBehaviour {
             Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + new Vector3(0, 0, -3), step);
         }
 
-        if(!moveLock)
-            PlayerMove();
+        PlayerMove();
 
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (!moveLock) //need to change to a attack gate
+            if (!attackGate) //need to change to a attack gate
             {
                 StartCoroutine("Attack");
             }
@@ -200,12 +204,10 @@ public class PlayerScript : MonoBehaviour {
 
     IEnumerator Attack()
     {
-       
-        moveLock = true;
-        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+        attackGate = true;
         swingObj.GetComponent<Animator>().SetTrigger("swing");
         yield return new WaitForSeconds(attackSpeed);
-        moveLock = false;    
+        attackGate = false;    
     }
 
     public List<RaycastResult> RaycastMouse()
@@ -383,12 +385,12 @@ public class PlayerScript : MonoBehaviour {
 
         if(horiz < 0)
         {
-            GetComponent<SpriteRenderer>().flipX = true;
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
 
         if(horiz > 0)
         {
-            GetComponent<SpriteRenderer>().flipX = false;
+            transform.eulerAngles = new Vector3(0, 0, 0);
         }
 
         if(rb.velocity.y == 0 && rb.velocity.x != 0 && !walkingSource.isPlaying)
@@ -504,17 +506,23 @@ public class PlayerScript : MonoBehaviour {
         {
             if (collision.transform.parent.tag == "enemies")
             {
-                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true; //bad guy sees the player
-                if (!collision.transform.parent.GetComponent<BaddieScript>().firstSeen)
+                if (collision.transform.parent.GetComponent<BaddieScript>())
                 {
-                    collision.transform.parent.GetComponent<BaddieScript>().pub_Fire();
-                    collision.transform.parent.GetComponent<BaddieScript>().run_FirstSeen();
-                    collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true;
+
+                    collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true; //bad guy sees the player
+                    if (!collision.transform.parent.GetComponent<BaddieScript>().firstSeen)
+                    {
+                        collision.transform.parent.GetComponent<BaddieScript>().pub_Fire();
+                        collision.transform.parent.GetComponent<BaddieScript>().run_FirstSeen();
+                        collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true;
+                    }
+
+                
                 }
 
                 if (collision.transform.name == "triggerDetection") //hit box on enemies for on-touch damage
                 {
-                   // StartCoroutine("DamageFlash");
+                    // StartCoroutine("DamageFlash");
                 }
             }
         }
@@ -552,13 +560,18 @@ public class PlayerScript : MonoBehaviour {
         {
             if (collision.transform.parent.tag == "enemies")
             {
-                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true; //bad guy sees the player
-                if (!collision.transform.parent.GetComponent<BaddieScript>().firstSeen)
+                if (collision.transform.parent.GetComponent<BaddieScript>())
                 {
-                    collision.transform.parent.GetComponent<BaddieScript>().pub_Fire();
-                    collision.transform.parent.GetComponent<BaddieScript>().run_FirstSeen();
-                    collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true; 
+
+                    collision.transform.parent.GetComponent<BaddieScript>().playerSeen = true; //bad guy sees the player
+                    if (!collision.transform.parent.GetComponent<BaddieScript>().firstSeen)
+                    {
+                        collision.transform.parent.GetComponent<BaddieScript>().pub_Fire();
+                        collision.transform.parent.GetComponent<BaddieScript>().run_FirstSeen();
+                        collision.transform.parent.GetComponent<BaddieScript>().firstSeen = true;
+                    }
                 }
+
                 
                 if (collision.transform.name == "triggerDetection") //hit box on enemies for on-touch damage
                 {
@@ -626,7 +639,14 @@ public class PlayerScript : MonoBehaviour {
         if (collision.transform.parent != null)
         {
             if (collision.transform.parent.tag == "enemies")
-                collision.transform.parent.GetComponent<BaddieScript>().playerSeen = false;
+            {
+                if (collision.transform.parent.GetComponent<BaddieScript>())
+                {
+                    collision.transform.parent.GetComponent<BaddieScript>().playerSeen = false;
+
+                }
+            }
+                
         }
     }
 

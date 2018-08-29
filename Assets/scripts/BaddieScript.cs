@@ -86,6 +86,15 @@ public class BaddieScript : MonoBehaviour {
         if(badType == BaddieType.bat)
         {    
             destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+            /*
+            transform.position += (target.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime;
+            Vector3 pos = (target.transform.position - transform.position);
+
+            if (pos.magnitude < 1.75f)
+            {
+                attack = true;
+            }
+            */
         }
         
         actualDest = destPos;
@@ -220,6 +229,32 @@ public class BaddieScript : MonoBehaviour {
     }
     */
 
+
+    public Vector3 ScanReturn()
+    {
+        Collider2D[] hitCollider;
+        hitCollider = Physics2D.OverlapCircleAll(transform.position, 2.25f, 1 << LayerMask.NameToLayer("player"));
+        for (var i = 0; i < hitCollider.Length; i++)
+        {
+            playerSeen = true;
+            flutterBool = true;
+            //destPos = hitCollider[i].transform.position;
+            Vector3 target = hitCollider[i].transform.position;
+            
+            speed = batAttackSpeed;
+            tick = 0;
+            return target;
+        }
+
+        if (hitCollider.Length == 0)
+        {
+            //destPos = new Vector3(Random.Range(moveZone.bounds.min.x, moveZone.bounds.max.x), Random.Range(moveZone.bounds.min.y, moveZone.bounds.max.y), 0);
+            tick = 0;
+            return Vector3.zero;
+        }
+        return Vector3.zero;
+    }
+
     public void EnemyScan()
     {        
         Collider2D[] hitCollider;
@@ -259,6 +294,7 @@ public class BaddieScript : MonoBehaviour {
 
                     if (gameObject.GetComponent<BaddieScript>().ParentObject != null) //was flagging error from boss bat minions
                     {
+                        //just decrement a counter on the boss when killed, just hard code in where you put them
                         SpawnScript tempScript = gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
                         tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
                         gameObject.SetActive(false);
@@ -266,6 +302,12 @@ public class BaddieScript : MonoBehaviour {
                 }             
             }
             collision.GetComponent<Melee_Hitbox>().armed = false;        
+        }
+
+        if(collision.transform.tag == "hitbox")
+        {
+            Vector3 posTest = ScanReturn();
+            Debug.Log(posTest);
         }
     }
 
