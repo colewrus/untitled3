@@ -15,6 +15,9 @@ TagManager:
   - boss
   - hitbox
   - enemyWeapon
+  - bat
+  - swordman
+  - blob
   layers:
   - Default
   - TransparentFX

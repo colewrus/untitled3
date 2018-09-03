@@ -194,12 +194,7 @@ public class GM : MonoBehaviour {
         }
     }
 
-    public void AddEnemy()
-    {        
-        enemyCount++;
-        t_enemyCount.text = "x" + enemyCount;
-        return;
-    }
+
 
     public void RemoveEnemy()
     {

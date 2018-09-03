@@ -11,7 +11,7 @@ public class PlayerScript : MonoBehaviour {
     public float speed;
     public float jumpPower;
 
-    public GameObject aimReticule;
+   
     Collider2D aimCollider;
     public GameObject bulletZone;
     public List<Collider2D> enemyCollider = new List<Collider2D>();
@@ -57,9 +57,9 @@ public class PlayerScript : MonoBehaviour {
 
     float jumpCount;
 
-    List<GameObject> keys = new List<GameObject>();
-    bool lookAtBoss;
-    GameObject tempBoss; //temporarily hold the boss as a gameobject so camera can pan to it
+    public List<GameObject> keys = new List<GameObject>();
+    public bool lookAtBoss;
+    public GameObject tempBoss; //temporarily hold the boss as a gameobject so camera can pan to it
     bool returnFromBoss; 
 
     public bool moveLock; //lock the player movement;
@@ -82,6 +82,10 @@ public class PlayerScript : MonoBehaviour {
     float attackTick;
     bool attackGate;
     public GameObject sword;
+    [Tooltip("Use this to make sure player doesn't take damage every frame")]
+    public bool takeDamage;
+
+    public GameObject door;
 
     //player animation stuph
     GameObject swingObj;
@@ -93,10 +97,9 @@ public class PlayerScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Debug.Log(WalkingClips[0].length);
         jumpCount = 0;
         rb = this.GetComponent<Rigidbody2D>();
-        aimCollider = aimReticule.GetComponent<Collider2D>();
+
         bulletCount = 6;       
         foreach(GameObject obj in GameObject.FindGameObjectsWithTag("enemies"))
         {
@@ -117,7 +120,7 @@ public class PlayerScript : MonoBehaviour {
         swingObj = gameObject.transform.Find("swing").gameObject;
         attackGate = false;
         //Set the offset from the player for the sword
-        Debug.Log(Vector3.Distance(transform.position, sword.transform.position));
+        sword.SetActive(false);
 	}
 
 
@@ -162,51 +165,15 @@ public class PlayerScript : MonoBehaviour {
             }
             
         }
-        /*
-        if (Input.GetMouseButtonDown(0))
-        {
-
-            if(!fireLock){
-                
-                if (bulletCount <= 0)
-                {
-                    return;
-                }
-                if (bulletCount > 1)
-                {
-                    Shoot();
-                    StopCoroutine("c_Reload");
-                }else
-                {
-                    StopCoroutine("c_Reload");           
-                    Shoot();
-                    StartCoroutine("c_Reload");
-                } 
-            }       
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (!reloading)
-            {                
-                StartCoroutine("c_Reload");
-                reloading = true;
-            }               
-        }
-
-        if(bulletCount > 6)
-        {
-            bulletCount = 6;
-        }
-      
-        */
 	}
 
     IEnumerator Attack()
     {
         attackGate = true;
         swingObj.GetComponent<Animator>().SetTrigger("swing");
+        sword.SetActive(true);
         yield return new WaitForSeconds(attackSpeed);
+        sword.SetActive(false);
         attackGate = false;    
     }
 
@@ -253,24 +220,7 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    void Reticule()
-    {
-        aimReticule.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0, 0, 10);
 
-
-        for (int i=0; i < enemyCollider.Count; i++)
-        {
-            if (aimCollider.bounds.Intersects(enemyCollider[i].bounds))
-            {
-                Color tmp = new Color(255, 0, 0);
-                aimReticule.GetComponent<SpriteRenderer>().color = tmp;                
-            }else
-            {
-                Color tmp = new Color(255,255,255);
-                aimReticule.GetComponent<SpriteRenderer>().color = tmp;
-            }
-        }
-    }
 
     IEnumerator c_Reload()
     {
@@ -483,7 +433,7 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    IEnumerator _DoorTransfer(GameObject DoorObj)
+    public IEnumerator _DoorTransfer(GameObject DoorObj)
     {
         fadeIn = true;
         //play the door sound
@@ -502,6 +452,9 @@ public class PlayerScript : MonoBehaviour {
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+
+        /*
+
         if (collision.transform.parent != null)
         {
             if (collision.transform.parent.tag == "enemies")
@@ -526,9 +479,14 @@ public class PlayerScript : MonoBehaviour {
                 }
             }
         }
+        */
+
     }
+
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
         if(collision.transform.tag == "door")
         {
             if (collision.gameObject.GetComponent<DoorScript>().activeDoor)
@@ -556,6 +514,7 @@ public class PlayerScript : MonoBehaviour {
                 rb.velocity = Vector3.zero;           
         }        
 
+        /*
         if(collision.transform.parent != null)
         {
             if (collision.transform.parent.tag == "enemies")
@@ -579,6 +538,23 @@ public class PlayerScript : MonoBehaviour {
                 }
             }
         }
+        */
+
+        if(collision.transform.tag == "bat"){
+
+            GameObject temp = collision.transform.parent.gameObject;
+
+            if(temp.GetComponent<BatScript>().attack && !temp.GetComponent<BatScript>().aggro)
+            {
+                if (!takeDamage)
+                {
+                    this.GetComponent<Animator>().SetTrigger("damage");
+                    takeDamage = true;
+                }
+            }
+
+        }
+
 
         if(collision.transform.tag == "spawner")
         {
@@ -594,22 +570,17 @@ public class PlayerScript : MonoBehaviour {
             rb.AddForce(new Vector2(-8, 1), ForceMode2D.Impulse);
             
             horiz = 0.5f * dir.x;
-            StartCoroutine("DamageFlash");
+            this.GetComponent<Animator>().SetTrigger("damage");
+            takeDamage = true;
         }
     }
 
-    IEnumerator DamageFlash()
-    {
-        GetComponent<SpriteRenderer>().color = redColor;
-        yield return new WaitForSeconds(0.2f);
-        GetComponent<SpriteRenderer>().color = baseColor;
-        yield return new WaitForSeconds(0.2f);
-        GetComponent<SpriteRenderer>().color = redColor;
-        yield return new WaitForSeconds(0.2f);
-        GetComponent<SpriteRenderer>().color = baseColor;
 
-
+    public void DamageRest(){
+        takeDamage = false;
     }
+
+
 
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -618,9 +589,12 @@ public class PlayerScript : MonoBehaviour {
             onLadder = false;            
         }
 
+        /*
         if(collision.transform.tag == "door")
         {
             if (collision.gameObject.GetComponent<DoorScript>().key != null) {
+
+                
                 if (collision.gameObject.GetComponent<DoorScript>().key == keys[0])
                 {
                     collision.gameObject.GetComponent<DoorScript>().CloseBossDoor();
@@ -630,11 +604,11 @@ public class PlayerScript : MonoBehaviour {
                     lookAtBoss = true;
                     moveLock = true;
                     StartCoroutine("ReturnFromBossIntro");
-                    //collision.gameObject.SetActive(false);
+                   
                 }
             }
-
         }
+        */
 
         if (collision.transform.parent != null)
         {
@@ -643,7 +617,6 @@ public class PlayerScript : MonoBehaviour {
                 if (collision.transform.parent.GetComponent<BaddieScript>())
                 {
                     collision.transform.parent.GetComponent<BaddieScript>().playerSeen = false;
-
                 }
             }
                 
@@ -652,18 +625,23 @@ public class PlayerScript : MonoBehaviour {
 
     IEnumerator ReturnFromBossIntro()
     {
+  
         yield return new WaitForSeconds(3);
         lookAtBoss = false;
         returnFromBoss = true;
+        transform.position = door.GetComponent<DoorScript>().bossSetup.position;
         yield return new WaitForSeconds(2);
+
         moveLock = false;
+
         if(tempBoss.GetComponent<Boss_Script>().thisBoss == BossType.bat)
         {
             tempBoss.GetComponent<Boss_Script>()._BatState = BatState.search;
-            //run the boss function that makes the health bar
-            
+            door.GetComponent<DoorScript>().CloseBossDoor();
         }
         tempBoss.GetComponent<Boss_Script>().InitCanvas();
+
+        Camera.main.GetComponent<CameraScript>().controlOverride = false;//return camera control to script
 
     }
 

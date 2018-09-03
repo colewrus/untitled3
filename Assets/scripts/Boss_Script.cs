@@ -44,17 +44,26 @@ public class Boss_Script : MonoBehaviour {
     public float v_fire20Cooldown;
 
     int randomSearchInt; //random index for search destinations
+
+
     //Summon Variables
     public List<GameObject> minions = new List<GameObject>();
     public List<Transform> minionSpawn = new List<Transform>();
+    public int summonCount;
     public Transform waitPos;
     public float waitTimer;
     float waitTick;
     bool summoned; //have you already called for the new wave of bats?
+
+
+
     GameObject deathObject;
     float deathResetTimer; //how long before you get teleported out
     bool deathTriggered; //so we just call some of the death stuff once
     public Font BatBossFont;
+
+
+
 	// Use this for initialization
 	void Start () {
         destMax = SearchDests.Count;
@@ -66,7 +75,9 @@ public class Boss_Script : MonoBehaviour {
         fire20cooldown = false;
         summoned = false;
         maxHealth = health;
+        summonCount = 0;
     }
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -199,6 +210,7 @@ public class Boss_Script : MonoBehaviour {
             {
                 minions[i].transform.position = minionSpawn[i].position;
                 minions[i].SetActive(true);
+                summonCount++;
             }
             summoned = true;            
         }
@@ -207,10 +219,11 @@ public class Boss_Script : MonoBehaviour {
         {
             waitTick += Time.deltaTime;
 
-            if(waitTick%5 < 3)
-            {
-                CheckMinions();
+            if(summonCount <= 0){
+                destCounter = 0;
+                _BatState = BatState.search;
             }
+
         }else
         {
             destCounter = 0;

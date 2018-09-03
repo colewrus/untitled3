@@ -18,14 +18,32 @@ public class BatScript : MonoBehaviour {
     Vector3 windBack;
     Vector3 dashDest;
 
+    public int health;
+
+    //Random variablies
+    [Tooltip("Is this bat part of a boss summoning?")]
+    public bool summoned;
+    [Tooltip("Provide the boss object so we can decrease the summoned count")]
+    public GameObject Boss_Summoner;
+    bool takeDamage;
+
+    public float damageResetTimer;
+
+
 	// Use this for initialization
 	void Start () {
         flyDest = transform.position;
+      
 		
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    private void Awake()
+    {
+        takeDamage = true;
+    }
+
+    // Update is called once per frame
+    void Update () {
         BatMove();
 
         if (attack)
@@ -92,8 +110,6 @@ public class BatScript : MonoBehaviour {
 
             if(pos.magnitude < 0.15f)
             {
-                //attack = false;
-                Debug.Log("chil");
                 StartCoroutine("AggroDelay");
             }
         }
@@ -114,8 +130,9 @@ public class BatScript : MonoBehaviour {
 
     IEnumerator AggroDelay()
     {
-        yield return new WaitForSeconds(aggroTimer);
         attack = false;
+        yield return new WaitForSeconds(aggroTimer);
+        attack = true;
     }
 
 
@@ -143,5 +160,26 @@ public class BatScript : MonoBehaviour {
         {
             Target = collision.gameObject;
         }
+
+        if(collision.tag == "hitbox"){
+            if(takeDamage){
+                health = health - 1;
+
+                if(health <= 0){
+
+                }
+                takeDamage = false;
+                //play damage sound
+                StartCoroutine("DamageReset");
+            }
+
+
+        }
+    }
+
+
+    IEnumerator DamageReset(){
+        yield return new WaitForSeconds(damageResetTimer);
+        takeDamage = true;
     }
 }

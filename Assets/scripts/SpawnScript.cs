@@ -23,7 +23,7 @@ public class WaveBuilder
             temp.GetComponent<BaddieScript>().moveZone = waveZone;
      
 
-            GM.instance.AddEnemy();
+          
             GM.instance.mainSource.PlayOneShot(GM.instance.fxClips[0]);
             PlayerScript.instance.enemyCollider.Add(temp.GetComponent<BoxCollider2D>());
         }
@@ -56,11 +56,13 @@ public class PlacedSpawn
         {
             
             temp = GameObject.Instantiate(spawnObj[i], spawnPlace[i].transform.position, Quaternion.identity) as GameObject;
-            temp.GetComponent<BaddieScript>().moveZone = waveZone;
+            if(temp.tag == "bat"){
+                temp.GetComponent<BatScript>().ActiveSpace = waveZone;
+            }
+          
             //init baddie
-            GM.instance.AddEnemy();
             GM.instance.mainSource.PlayOneShot(GM.instance.fxClips[0]);
-            PlayerScript.instance.enemyCollider.Add(temp.GetComponent<BoxCollider2D>());
+        
             waveCount++;
             temp.GetComponent<BaddieScript>().ParentObject = parentObj;
         }
