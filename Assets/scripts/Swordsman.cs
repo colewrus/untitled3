@@ -14,6 +14,8 @@ public class Swordsman : MonoBehaviour {
 
     public GameObject swordObj;//this is the collider for the sword
     Animator myAnim;
+
+    public float attackDist;
      
     // Use this for initialization
     void Start () {
@@ -28,10 +30,21 @@ public class Swordsman : MonoBehaviour {
         if (playerSeen && !attack)
         {
             //ok but limit the y movement
+
+            //check which side player is on then flip
+
+            if(target.transform.position.x > transform.position.x)
+            {
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+            else
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
             transform.position += (target.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime;
             Vector3 pos = (target.transform.position - transform.position);
 
-            if(pos.magnitude < 1.75f)
+            if(pos.magnitude < attackDist)
             {
                 attack = true;                
             }
