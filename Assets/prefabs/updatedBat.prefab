@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 114570717104173796}
   - component: {fileID: 50949466415072414}
   - component: {fileID: 58426137532410020}
+  - component: {fileID: 82111583937817838}
   m_Layer: 0
   m_Name: updatedBat
   m_TagString: Untagged
@@ -67,8 +68,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1174942917197638}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.83, y: 2.58, z: -0.28515625}
-  m_LocalScale: {x: 4, y: 4, z: 1}
+  m_LocalPosition: {x: 42.518, y: -14.759, z: -0.28515625}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children:
   - {fileID: 4361090624437818}
   m_Father: {fileID: 0}
@@ -108,7 +109,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.7
+  m_Radius: 1.4
 --- !u!58 &58475220089671246
 CircleCollider2D:
   m_ObjectHideFlags: 1
@@ -123,7 +124,102 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.015}
   serializedVersion: 2
-  m_Radius: 0.038
+  m_Radius: 0.1
+--- !u!82 &82111583937817838
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1174942917197638}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!95 &95919052210384776
 Animator:
   serializedVersion: 3
@@ -158,14 +254,18 @@ MonoBehaviour:
   speed: 1.75
   attack: 0
   search: 0
-  searchDelay: 4
+  searchDelay: 3
   ActiveSpace: {fileID: 0}
   aggro: 0
-  aggroTimer: 10
-  health: 0
+  aggroTimer: 1
+  health: 1
   summoned: 0
   Boss_Summoner: {fileID: 0}
   damageResetTimer: 1
+  freeze: 0
+  myClips:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!212 &212855481155155974
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -201,7 +301,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 50
-  m_Sprite: {fileID: 21300000, guid: c05758bcded44004ca161f8ed247d140, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 70818b526f0ea43248933afa22f05526, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

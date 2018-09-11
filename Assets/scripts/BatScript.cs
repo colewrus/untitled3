@@ -18,7 +18,7 @@ public class BatScript : MonoBehaviour {
     Vector3 windBack;
     Vector3 dashDest;
 
-    public int health;
+    public float health;
 
     //Random variablies
     [Tooltip("Is this bat part of a boss summoning?")]
@@ -28,7 +28,11 @@ public class BatScript : MonoBehaviour {
     bool takeDamage;
 
     public float damageResetTimer;
+    public bool freeze; //use to hard lock movement
 
+    //Audio Ish
+    AudioSource myAudioSource;
+    public List<AudioClip> myClips = new List<AudioClip>();
 
 	// Use this for initialization
 	void Start () {
@@ -40,17 +44,23 @@ public class BatScript : MonoBehaviour {
     private void Awake()
     {
         takeDamage = true;
+        freeze = false;
+        myAudioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update () {
-        BatMove();
 
-        if (attack)
-        {
-            BatAttack();
+        if(!freeze){
+            BatMove();
+
+            if (attack)
+            {
+                BatAttack();
+            }
         }
-        
+
+
         
 	}
 
@@ -63,6 +73,8 @@ public class BatScript : MonoBehaviour {
            
             //ok but limit the y movement
             transform.position += (Target.transform.position - transform.position).normalized * speed * Time.deltaTime;
+     
+           
             Vector3 pos = (Target.transform.position - transform.position);
 
             if (pos.magnitude < 0.95f)
@@ -100,6 +112,7 @@ public class BatScript : MonoBehaviour {
             {
                 
                 aggro = false;
+                myAudioSource.PlayOneShot(myClips[1], 0.85f);
             }        
         }
 
@@ -110,7 +123,9 @@ public class BatScript : MonoBehaviour {
 
             if(pos.magnitude < 0.15f)
             {
+
                 StartCoroutine("AggroDelay");
+
             }
         }
 
@@ -121,17 +136,26 @@ public class BatScript : MonoBehaviour {
         //start and wait for aggro cooldown
     }
 
+    public void PlaySound(AudioClip sound){
+        myAudioSource.PlayOneShot(sound);
+    }
+
     IEnumerator MoveDelay()
     {
+        freeze = true;
         yield return new WaitForSeconds(searchDelay);
+        Debug.Log("move delay done");
         flyDest = new Vector3(Random.Range(ActiveSpace.bounds.min.x, ActiveSpace.bounds.max.x), Random.Range(ActiveSpace.bounds.min.y, ActiveSpace.bounds.max.y), 0);
-    
+        freeze = false;
     }
 
     IEnumerator AggroDelay()
     {
         attack = false;
+
         yield return new WaitForSeconds(aggroTimer);
+        Debug.Log("aggro timer done");
+        freeze = false;
         attack = true;
     }
 
@@ -161,22 +185,33 @@ public class BatScript : MonoBehaviour {
             Target = collision.gameObject;
         }
 
-        if(collision.tag == "hitbox"){
-            if(takeDamage){
-                health = health - 1;
 
-                if(health <= 0){
-
-                }
-                takeDamage = false;
-                //play damage sound
-                StartCoroutine("DamageReset");
-            }
-
-
-        }
     }
 
+    public void HitReg(float dmg){
+
+        if (takeDamage)
+        {
+            health = health - dmg;
+			attack = false;
+			aggro = false;
+            transform.position = transform.position;
+            if (health <= 0)
+            {
+                //play death animation
+                gameObject.GetComponent<Animator>().SetTrigger("die");
+                //myAudioSource.PlayOneShot(myClips[0]);
+            }
+            takeDamage = false;
+            //play damage sound
+            StartCoroutine("DamageReset");
+        }
+        
+    }
+
+    public void Deactivate(){
+        gameObject.SetActive(false);
+    }
 
     IEnumerator DamageReset(){
         yield return new WaitForSeconds(damageResetTimer);

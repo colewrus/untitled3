@@ -87,6 +87,11 @@ public class PlayerScript : MonoBehaviour {
 
     public GameObject door;
 
+
+    public List<AudioClip> swingClips = new List<AudioClip>();
+    public AudioSource mySwingSource;
+
+
     //player animation stuph
     GameObject swingObj;
 
@@ -171,6 +176,7 @@ public class PlayerScript : MonoBehaviour {
     {
         attackGate = true;
         swingObj.GetComponent<Animator>().SetTrigger("swing");
+        mySwingSource.PlayOneShot(swingClips[0]);
         sword.SetActive(true);
         yield return new WaitForSeconds(attackSpeed);
         sword.SetActive(false);
@@ -366,7 +372,7 @@ public class PlayerScript : MonoBehaviour {
                 if(jumpCount < 2)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, 0);
-                    rb.AddForce(Vector2.up * (jumpPower + jumpCount), ForceMode2D.Impulse);
+                    rb.AddForce(Vector2.up * (jumpPower *1.2f), ForceMode2D.Impulse);
                     jumpCount++;
                 }
             }
@@ -383,7 +389,7 @@ public class PlayerScript : MonoBehaviour {
             if (onPlatform)
             {
                 this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;  
-                Invoke("DownThrough", 0.41f);                
+                Invoke("DownThrough", 0.21f);                
             }
         }
 
