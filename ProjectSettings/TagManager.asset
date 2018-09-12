@@ -18,6 +18,7 @@ TagManager:
   - bat
   - swordman
   - blob
+  - floor
   layers:
   - Default
   - TransparentFX

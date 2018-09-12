@@ -68,7 +68,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1174942917197638}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 42.518, y: -14.759, z: -0.28515625}
+  m_LocalPosition: {x: 9.53, y: 0.49, z: -0.28515625}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children:
   - {fileID: 4361090624437818}
@@ -145,7 +145,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 5
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -264,8 +264,9 @@ MonoBehaviour:
   damageResetTimer: 1
   freeze: 0
   myClips:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: a10c6983baf924e6e8e48f6ac4d4b04c, type: 3}
+  - {fileID: 8300000, guid: f906d8d5259744da0a4481f1ab603a44, type: 3}
+  - {fileID: 8300000, guid: 5a3c8568d03aa4447af9586f0adc95f6, type: 3}
 --- !u!212 &212855481155155974
 SpriteRenderer:
   m_ObjectHideFlags: 1

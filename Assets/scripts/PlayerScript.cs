@@ -55,7 +55,7 @@ public class PlayerScript : MonoBehaviour {
     Collider2D[] colliders;
     Collider2D myCollider;
 
-    float jumpCount;
+    public float jumpCount;
 
     public List<GameObject> keys = new List<GameObject>();
     public bool lookAtBoss;
@@ -91,6 +91,9 @@ public class PlayerScript : MonoBehaviour {
     public List<AudioClip> swingClips = new List<AudioClip>();
     public AudioSource mySwingSource;
 
+
+    public float floorCheckTimer;
+    public bool floored;
 
     //player animation stuph
     GameObject swingObj;
@@ -189,7 +192,7 @@ public class PlayerScript : MonoBehaviour {
         pointerData.position = Input.mousePosition;
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerData, results);
-        Debug.Log(results.Count);
+      
         return results;
     }
 
@@ -246,91 +249,13 @@ public class PlayerScript : MonoBehaviour {
         }    
     }
 
-    void Shoot()
-    {
-        reloading = false;
-
-        Vector2 rayDest = Input.mousePosition;
-       
-        rayDest = Camera.main.ScreenToWorldPoint(rayDest);
-              
-        Vector2 destinationActual = rayDest - new Vector2(transform.position.x, transform.position.y);
-
-        hit2d = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y), destinationActual, gunRange, viableLayers);
-
-        if(hit2d.collider != null)
-        {
-            
-            part.transform.position = hit2d.point;
-            part.Play();
-            
-            if(hit2d.collider.transform.tag == "enemies")
-            {                       
-                if(hit2d.collider.gameObject.GetComponent<BaddieScript>().health - damage <= 0){
-
-
-                    if(hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject == null)
-                    {
-                        hit2d.transform.gameObject.SetActive(false);
-                    }
-                   
-
-
-                    if (hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject != null) //was flagging error from boss bat minions
-                    {
-                        SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();
-                        tempScript.p_Waves[tempScript.waveCounter - 1].EnemyKilled();
-                        enemyCollider.Remove(hit2d.collider);
-                        Destroy(hit2d.collider.gameObject);
-                    }
-                    
-                    
-
-                    /* is this necessary? Why were we looking for the Parent Object
-                    if (hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject!= null)
-                    {
-                        SpawnScript tempScript = hit2d.collider.gameObject.GetComponent<BaddieScript>().ParentObject.GetComponent<SpawnScript>();   
-                        tempScript.p_Waves[tempScript.waveCounter-1].EnemyKilled();  
-                    }
-                    */
-             
-
-                }else{
-                    hit2d.collider.gameObject.GetComponent<BaddieScript>().health -= damage;
-                }
-            }
-
-            if(hit2d.collider.transform.tag == "boss")
-            {
-                if(hit2d.collider.gameObject.GetComponent<Boss_Script>().health - damage <= 0)
-                {
-                    hit2d.collider.gameObject.GetComponent<Boss_Script>().ReceiveDamage(damage);
-                    Debug.Log("holy crap you killed the boss");
-                }
-                else
-                {
-                    hit2d.collider.gameObject.GetComponent<Boss_Script>().ReceiveDamage(damage);
-                }
-            }
-        }
-
-        Ray myRay = new Ray(transform.position, destinationActual*gunRange);
-        Physics2D.Raycast(transform.position, destinationActual, gunRange);  
-        Debug.DrawRay(transform.position, destinationActual*gunRange, Color.cyan);
-        
-       
-        myAudio.PlayOneShot(EffectsClips[0], 0.8f);
-        bulletCount--;
-        
-        bullets[Mathf.FloorToInt(bulletCount)].SetActive(false);
-    }
 
     void PlayerMove()
     {
         horiz = Input.GetAxis("Horizontal");
         if (!moveLock)
         {
-            rb.velocity = new Vector3(horiz * speed, Mathf.Clamp(rb.velocity.y, -10, 10));
+            rb.velocity = new Vector3(horiz * speed, Mathf.Clamp(rb.velocity.y, -18, 10));
         }else
         {
             
@@ -367,34 +292,49 @@ public class PlayerScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
+           
             if (!onLadder)
             {
+                /*
+                if(jumpCount == 0){
+                    GetComponent<Animator>().SetTrigger("jump");
+                    jumpCount++;
+                    rb.velocity = new Vector2(rb.velocity.x, 0);
+                    rb.AddForce(Vector2.up * (jumpPower), ForceMode2D.Impulse);
+                }
+                */
+                if(jumpCount == 0 && floored){
+                    floored = false;
+                    GetComponent<Animator>().SetBool("floored", false);
+                    GetComponent<Animator>().SetTrigger("jump");
+                   
+                }
                 if(jumpCount < 2)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, 0);
                     rb.AddForce(Vector2.up * (jumpPower *1.2f), ForceMode2D.Impulse);
                     jumpCount++;
                 }
+           
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            if(jumpCount < 2)
-               rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y/2);
-        }        
+       
 
         if (Input.GetKey(KeyCode.S))
         {
             if (onPlatform)
             {
                 this.GetComponent<CapsuleCollider2D>().enabled = !GetComponent<CapsuleCollider2D>().enabled;  
-                Invoke("DownThrough", 0.21f);                
+                Invoke("DownThrough", 0.31f);
+                GetComponent<Animator>().SetTrigger("down");
             }
         }
 
 
     }
+
+
 
     void DownThrough()
     {
@@ -408,12 +348,15 @@ public class PlayerScript : MonoBehaviour {
         if(collision.transform.tag == "platform") //check to see if we're on platform to enable down jump-through
         {
             onPlatform = true;
-            jumpCount = 0;
+            floored = true;
+            StartCoroutine("FloorCheck");
         }
 
         if(collision.collider.name == "floors")
         {
-            jumpCount = 0;
+
+            floored = true;
+            StartCoroutine("FloorCheck");
         }
 
         if(collision.transform.tag == "key")
@@ -425,7 +368,16 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
+    IEnumerator FloorCheck(){
+        yield return new WaitForSeconds(floorCheckTimer);
+        if(onPlatform || floored){
+            jumpCount = 0;
+       
+            GetComponent<Animator>().SetBool("floored", true);
 
+        }
+      
+    }
 
   
 
@@ -433,9 +385,13 @@ public class PlayerScript : MonoBehaviour {
     {
         if(collision.transform.tag == "platform")
         {
-            
             onPlatform = false;
-            
+            GetComponent<Animator>().SetBool("floored", false);
+        }
+
+        if(collision.transform.tag == "floor"){
+            floored = false;
+    
         }
     }
 
@@ -452,13 +408,23 @@ public class PlayerScript : MonoBehaviour {
         yield return new WaitForSeconds(fadeModifier/2);
         fadeOut = true;
        
-        bulletZone.transform.position = DoorObj.GetComponent<DoorScript>().bulletZoneReset.position;
+//        bulletZone.transform.position = DoorObj.GetComponent<DoorScript>().bulletZoneReset.position;
     }
 
 
     private void OnTriggerStay2D(Collider2D collision)
     {
 
+        if (collision.transform.tag == "enemyWeapon")
+        {
+
+            if(!takeDamage){
+                Debug.Log("trigger stay");
+                GetComponent<Animator>().SetTrigger("damage");
+                takeDamage = true;
+            }
+          
+        }
         /*
 
         if (collision.transform.parent != null)
@@ -561,6 +527,11 @@ public class PlayerScript : MonoBehaviour {
 
         }
 
+        if(collision.transform.tag == "enemyWeapon"){
+            GetComponent<Animator>().SetTrigger("damage");
+            takeDamage = true;
+            Debug.Log("enemy weapon should enter");
+        }
 
         if(collision.transform.tag == "spawner")
         {

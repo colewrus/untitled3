@@ -30,9 +30,13 @@ public class BatScript : MonoBehaviour {
     public float damageResetTimer;
     public bool freeze; //use to hard lock movement
 
+    bool flap; //to control how often we play the flap sound
+
     //Audio Ish
     AudioSource myAudioSource;
     public List<AudioClip> myClips = new List<AudioClip>();
+    
+   
 
 	// Use this for initialization
 	void Start () {
@@ -140,11 +144,21 @@ public class BatScript : MonoBehaviour {
         myAudioSource.PlayOneShot(sound);
     }
 
+    public void FlapSoundRandomizer(AudioClip sound){
+
+        if(flap){
+            myAudioSource.PlayOneShot(sound, 0.55f);
+
+        }
+        flap = !flap;
+
+    }
+
     IEnumerator MoveDelay()
     {
         freeze = true;
         yield return new WaitForSeconds(searchDelay);
-        Debug.Log("move delay done");
+    
         flyDest = new Vector3(Random.Range(ActiveSpace.bounds.min.x, ActiveSpace.bounds.max.x), Random.Range(ActiveSpace.bounds.min.y, ActiveSpace.bounds.max.y), 0);
         freeze = false;
     }
@@ -154,7 +168,7 @@ public class BatScript : MonoBehaviour {
         attack = false;
 
         yield return new WaitForSeconds(aggroTimer);
-        Debug.Log("aggro timer done");
+       
         freeze = false;
         attack = true;
     }

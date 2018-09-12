@@ -62,7 +62,8 @@ public class Boss_Script : MonoBehaviour {
     bool deathTriggered; //so we just call some of the death stuff once
     public Font BatBossFont;
 
-
+    public GameObject teleporter;
+    public Vector3 dest;
 
 	// Use this for initialization
 	void Start () {
@@ -422,10 +423,16 @@ public class Boss_Script : MonoBehaviour {
             newText.transform.SetParent(GameObject.Find("Boss-Canvas").transform);
             newText.AddComponent<Outline>();
             newText.GetComponent<RectTransform>().anchoredPosition = new Vector2(6, 6);
+            //teleport shit
+            teleporter.GetComponent<teleportScript>().StartTP();
+            teleporter.GetComponent<teleportScript>().TPDest(dest);
             deathTriggered = true;
         }
 
     }
+
+
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {      
