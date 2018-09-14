@@ -7,7 +7,7 @@ public class teleportScript : MonoBehaviour {
 
     public Vector3 dest;
 
-
+    GameObject obi;
 
 	// Use this for initialization
 	void Start () {
@@ -23,6 +23,8 @@ public class teleportScript : MonoBehaviour {
 
     }
 
+
+
     public void TPDest(Vector3 d){
         dest = d;
 
@@ -31,5 +33,6 @@ public class teleportScript : MonoBehaviour {
     IEnumerator TP(){
         yield return new WaitForSeconds(5);
         transform.parent.transform.position = dest;
+        
     }
 }

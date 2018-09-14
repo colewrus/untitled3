@@ -19,7 +19,7 @@ public class BatScript : MonoBehaviour {
     Vector3 dashDest;
 
     public float health;
-
+    float healthStore;
     //Random variablies
     [Tooltip("Is this bat part of a boss summoning?")]
     public bool summoned;
@@ -41,7 +41,7 @@ public class BatScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         flyDest = transform.position;
-      
+        healthStore = health;
 		
 	}
 
@@ -50,6 +50,7 @@ public class BatScript : MonoBehaviour {
         takeDamage = true;
         freeze = false;
         myAudioSource = GetComponent<AudioSource>();
+        health = healthStore;
     }
 
     // Update is called once per frame
@@ -147,7 +148,7 @@ public class BatScript : MonoBehaviour {
     public void FlapSoundRandomizer(AudioClip sound){
 
         if(flap){
-            myAudioSource.PlayOneShot(sound, 0.55f);
+            myAudioSource.PlayOneShot(sound, 0.15f);
 
         }
         flap = !flap;

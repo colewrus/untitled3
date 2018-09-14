@@ -145,15 +145,15 @@ public class Boss_Script : MonoBehaviour {
             {
                 destCounter = 0;
                 float roll = Random.RandomRange(0, 10);
-                if (roll < 5)
+                if (roll <= 4)
                 {
                     _BatState = BatState.attack4;
                 }
                 else
                 {
-                    if (roll > 4 && roll < 9)
+                    if (roll > 4 && roll < 8)
                         _BatState = BatState.attack8;
-                    if (roll > 8)
+                    if (roll >= 8)
                         _BatState = BatState.summon;
                 }
 
@@ -296,16 +296,22 @@ public class Boss_Script : MonoBehaviour {
                 Vector3 tempV = new Vector3(Mathf.Cos(theta), Mathf.Sin(theta), 0) * 2;
                 target = tempV;                
                 Debug.DrawLine(transform.position, transform.position + tempV, Color.blue, 3);
-            
-                bull.transform.position = this.transform.position;
-                bull.transform.localScale = new Vector3(1.5f, 1.5f, 0);
-                bull.GetComponent<BulletScript>().speed = 5;
-                bull.SetActive(true);
-                bull.GetComponent<Rigidbody2D>().velocity = target.normalized * 5;
-                shotCount++;
-                shot20Tick = 0;
-                
-            }
+
+                //ran into a null reference error, making a hard break
+                if(bull != null){
+                    bull.transform.position = this.transform.position;
+                    bull.transform.localScale = new Vector3(1.5f, 1.5f, 0);
+                    bull.GetComponent<BulletScript>().speed = 5;
+                    bull.SetActive(true);
+                    bull.GetComponent<Rigidbody2D>().velocity = target.normalized * 5;
+                    shotCount++;
+                    shot20Tick = 0;
+                }else{
+                    fire20cooldown = true;
+                    return;
+                }
+           
+             }
         }else
         {
           
@@ -426,13 +432,16 @@ public class Boss_Script : MonoBehaviour {
             //teleport shit
             teleporter.GetComponent<teleportScript>().StartTP();
             teleporter.GetComponent<teleportScript>().TPDest(dest);
+            teleporter.GetComponent<teleportScript>().StartCoroutine("TP");
             deathTriggered = true;
         }
 
     }
 
 
+    IEnumerator removeBatStuff(){
 
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {      
