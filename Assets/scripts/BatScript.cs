@@ -142,14 +142,14 @@ public class BatScript : MonoBehaviour {
     }
 
     public void PlaySound(AudioClip sound){
-        myAudioSource.PlayOneShot(sound);
+        myAudioSource.PlayOneShot(sound, 0.9f);
     }
 
     public void FlapSoundRandomizer(AudioClip sound){
 
         if(flap){
-            myAudioSource.PlayOneShot(sound, 0.15f);
-
+            myAudioSource.PlayOneShot(sound, 0.55f);
+            Debug.Log(gameObject.name + " should flap");
         }
         flap = !flap;
 

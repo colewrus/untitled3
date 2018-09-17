@@ -312,7 +312,7 @@ public class PlayerScript : MonoBehaviour {
                 if(jumpCount < 2)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, 0);
-                    rb.AddForce(Vector2.up * (jumpPower *1.2f), ForceMode2D.Impulse);
+                    rb.AddForce(Vector2.up * (jumpPower *1.75f), ForceMode2D.Impulse);
                     jumpCount++;
                 }
            

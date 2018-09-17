@@ -32,7 +32,9 @@ public class teleportScript : MonoBehaviour {
 
     IEnumerator TP(){
         yield return new WaitForSeconds(5);
+        GetComponent<Animator>().SetTrigger("empty");
         transform.parent.transform.position = dest;
+      
         
     }
 }

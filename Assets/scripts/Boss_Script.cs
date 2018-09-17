@@ -45,7 +45,7 @@ public class Boss_Script : MonoBehaviour {
 
     int randomSearchInt; //random index for search destinations
 
-
+    public List<AudioClip> musicClips = new List<AudioClip>();
     //Summon Variables
     public List<GameObject> minions = new List<GameObject>();
     public List<Transform> minionSpawn = new List<Transform>();
@@ -61,6 +61,8 @@ public class Boss_Script : MonoBehaviour {
     float deathResetTimer; //how long before you get teleported out
     bool deathTriggered; //so we just call some of the death stuff once
     public Font BatBossFont;
+    float deathTick;
+    GameObject newText;
 
     public GameObject teleporter;
     public Vector3 dest;
@@ -415,9 +417,10 @@ public class Boss_Script : MonoBehaviour {
 
     void BatDead()
     {
+
         if (!deathTriggered)
         {
-            GameObject newText = new GameObject("winText", typeof(RectTransform));
+            newText = new GameObject("winText", typeof(RectTransform));
             var newTextComp = newText.AddComponent<Text>();
             newTextComp.text = "Vile Bat Defeated";
             newTextComp.alignment = TextAnchor.MiddleCenter;
@@ -433,15 +436,28 @@ public class Boss_Script : MonoBehaviour {
             teleporter.GetComponent<teleportScript>().StartTP();
             teleporter.GetComponent<teleportScript>().TPDest(dest);
             teleporter.GetComponent<teleportScript>().StartCoroutine("TP");
+            deathTick = 0;
+            PlayerScript.instance.moveLock = true;
             deathTriggered = true;
         }
 
+        if (deathTriggered)
+        {
+            if(deathTick < 5.5f)
+            {
+                deathTick += 1 * Time.deltaTime;
+            }
+            else
+            {
+                PlayerScript.instance.moveLock = false;
+                newText.SetActive(false);
+                healthBar.gameObject.SetActive(false);
+                healthBarText.gameObject.SetActive(false);
+            }
+        }
     }
 
 
-    IEnumerator removeBatStuff(){
-
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {      

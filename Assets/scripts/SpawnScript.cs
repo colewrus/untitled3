@@ -112,8 +112,7 @@ public class SpawnScript : MonoBehaviour {
 
     IEnumerator StartSpawn()
     {
-        yield return new WaitForSeconds(1f);
-        GM.instance.AnnounceWave();
+        yield return new WaitForSeconds(1f);      
         yield return new WaitForSeconds(timer);
         Spawn();
     }
