@@ -420,6 +420,13 @@ public class Boss_Script : MonoBehaviour {
 
         if (!deathTriggered)
         {
+            //disable minions
+            for(int i=0; i < minions.Count; i++)
+            {
+                minions[i].GetComponent<Animator>().SetTrigger("die");
+            }
+
+
             newText = new GameObject("winText", typeof(RectTransform));
             var newTextComp = newText.AddComponent<Text>();
             newTextComp.text = "Vile Bat Defeated";

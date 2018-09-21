@@ -303,10 +303,12 @@ public class PlayerScript : MonoBehaviour {
                     rb.AddForce(Vector2.up * (jumpPower), ForceMode2D.Impulse);
                 }
                 */
-                if(jumpCount == 0 && floored){
-                    floored = false;
-                    GetComponent<Animator>().SetBool("floored", false);
-                    GetComponent<Animator>().SetTrigger("jump");
+                if(jumpCount == 0){
+                  
+                        floored = false;
+                        GetComponent<Animator>().SetBool("floored", false);
+                        GetComponent<Animator>().SetTrigger("jump");
+                    
                    
                 }
                 if(jumpCount < 2)
@@ -347,8 +349,12 @@ public class PlayerScript : MonoBehaviour {
     {
         if(collision.transform.tag == "platform") //check to see if we're on platform to enable down jump-through
         {
-            onPlatform = true;
-            floored = true;
+
+            Debug.Log(rb.velocity.y);
+            if(rb.velocity.y <= 0.1f)
+            {
+                onPlatform = true;
+            }
             StartCoroutine("FloorCheck");
         }
 
@@ -371,8 +377,7 @@ public class PlayerScript : MonoBehaviour {
     IEnumerator FloorCheck(){
         yield return new WaitForSeconds(floorCheckTimer);
         if(onPlatform || floored){
-            jumpCount = 0;
-       
+            jumpCount = 0;       
             GetComponent<Animator>().SetBool("floored", true);
 
         }

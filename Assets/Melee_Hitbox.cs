@@ -25,6 +25,7 @@ public class Melee_Hitbox : MonoBehaviour
 
         if(collision.tag == "swordman"){
             collision.transform.parent.GetComponent<Swordsman>().HitReg(Damage);
+            Debug.Log("hit swordsman");
         }
 
         if(collision.tag == "boss"){

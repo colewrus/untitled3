@@ -2696,7 +2696,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 2
+  orthographic size: 2.25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2919,7 +2919,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 396666884}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5, y: -4.67, z: 0.15234375}
+  m_LocalPosition: {x: 2.6, y: -4.73, z: 0.15234375}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 2087604303}
@@ -31866,6 +31866,7 @@ MonoBehaviour:
   shot20Timer: 0.1
   fire20cooldown: 0
   v_fire20Cooldown: 3.5
+  musicClips: []
   minions:
   - {fileID: 2132831490}
   - {fileID: 701608538}
@@ -31950,8 +31951,18 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1174942917197638, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114570717104173796, guid: b5948c7ab473240e495718c7e6b3084d,
+        type: 2}
+      propertyPath: summoned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114570717104173796, guid: b5948c7ab473240e495718c7e6b3084d,
+        type: 2}
+      propertyPath: Boss_Summoner
+      value: 
+      objectReference: {fileID: 699338984}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
   m_IsPrefabParent: 0
@@ -33905,6 +33916,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainSource: {fileID: 0}
+  sounds:
+  - name: Main
+    clip: {fileID: 8300000, guid: b7754b008230740a3b4b0297040726bd, type: 3}
+    volume: 0.75
+    pitch: 1
+    source: {fileID: 0}
+    isPlaying: 0
+  - name: alt
+    clip: {fileID: 8300000, guid: d792c2882ba974dfdba563015f16fba5, type: 3}
+    volume: 0.75
+    pitch: 1
+    source: {fileID: 0}
+    isPlaying: 0
+  - name: bubbles
+    clip: {fileID: 8300000, guid: d956d2c6de96e4381b5a79ba75aaa72b, type: 3}
+    volume: 0.75
+    pitch: 1
+    source: {fileID: 0}
+    isPlaying: 0
   clips:
   - {fileID: 8300000, guid: a5caf75d41d4f494787d7d4692b1f542, type: 3}
   - {fileID: 8300000, guid: d792c2882ba974dfdba563015f16fba5, type: 3}
@@ -33927,7 +33957,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0
+  m_Volume: 0.401
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -35707,10 +35737,6 @@ Prefab:
       propertyPath: m_Name
       value: updatedBat (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 1174942917197638, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
   m_IsPrefabParent: 0
@@ -35769,8 +35795,18 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1174942917197638, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114570717104173796, guid: b5948c7ab473240e495718c7e6b3084d,
+        type: 2}
+      propertyPath: summoned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114570717104173796, guid: b5948c7ab473240e495718c7e6b3084d,
+        type: 2}
+      propertyPath: Boss_Summoner
+      value: 
+      objectReference: {fileID: 699338984}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
   m_IsPrefabParent: 0
@@ -35858,7 +35894,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1509488697}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.3, y: 0.5, z: 0}
+  m_LocalPosition: {x: 41.14, y: -15.59, z: -0.107769325}
   m_LocalScale: {x: 0.23, y: 0.23, z: 2.599588}
   m_Children:
   - {fileID: 169094191}
@@ -35967,7 +36003,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 8d537b45b1d424a6d9089523f1dd3b06, type: 3}
   - {fileID: 8300000, guid: fd0a4f2063d6c48cca52e2fc74a66723, type: 3}
   mySwingSource: {fileID: 1509488703}
-  floorCheckTimer: 0
+  floorCheckTimer: 0.02
   floored: 0
 --- !u!82 &1509488703
 AudioSource:
@@ -36260,6 +36296,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 502695153}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1554766484
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1554766485}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1554766485
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1554766484}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 12.328148, y: 1.7104127, z: -0.09765625}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1562879130
 GameObject:
@@ -43341,8 +43405,18 @@ Prefab:
       objectReference: {fileID: 2094527313}
     - target: {fileID: 1174942917197638, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114570717104173796, guid: b5948c7ab473240e495718c7e6b3084d,
+        type: 2}
+      propertyPath: summoned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114570717104173796, guid: b5948c7ab473240e495718c7e6b3084d,
+        type: 2}
+      propertyPath: Boss_Summoner
+      value: 
+      objectReference: {fileID: 699338984}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b5948c7ab473240e495718c7e6b3084d, type: 2}
   m_IsPrefabParent: 0

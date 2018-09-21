@@ -1,7 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using UnityEngine.UI;
+
+[System.Serializable]
+public class Sound
+{
+
+    public string name;
+
+    public AudioClip clip;
+    [Range(0f,1f)]
+    public float volume;
+    [Range(0f,1f)]
+    public float pitch;
+
+    [HideInInspector]
+    public AudioSource source;
+    public bool isPlaying;
+}
 
 
 public class GM : MonoBehaviour {
@@ -10,6 +28,8 @@ public class GM : MonoBehaviour {
 
  
     public AudioSource mainSource;
+
+    public Sound[] sounds;
 
     public List<AudioClip> clips = new List<AudioClip>();
     public List<AudioClip> fxClips = new List<AudioClip>();
@@ -25,8 +45,17 @@ public class GM : MonoBehaviour {
         instance = this;
         mainSource = this.GetComponent<AudioSource>();
         mainSource.clip = clips[0];
-        mainSource.Play();
+      // mainSource.Play();
         mainSource.loop = true;
+
+        foreach(Sound s in sounds)
+        {
+            s.source = gameObject.AddComponent<AudioSource>();
+            s.source.clip = s.clip;
+            s.source.volume = s.volume;
+            s.source.pitch = s.pitch;
+            s.source.loop = true;
+        }
     }
 
 
@@ -41,12 +70,33 @@ public class GM : MonoBehaviour {
             BulletPool.Add(obj);
         }
 
-
+        PlaySound("Main");
     }
-  
 
+    public void PlaySound(string name)
+    {
+        foreach(Sound y in sounds)
+        {
+            if (y.isPlaying)
+            {
+                y.source.Stop();
+                y.isPlaying = false;
+            }
+        }
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        s.source.Play();
+        s.isPlaying = true;
 
+        return;
+    }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            PlaySound("bubbles");
+        }
+    }
 
     public GameObject GetBullets()
     {

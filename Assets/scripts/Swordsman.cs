@@ -10,7 +10,7 @@ public class Swordsman : MonoBehaviour {
     public bool playerSeen;
     public bool attack;
 
-    bool attackStart; //primarily to control the animation of the attack
+    public bool attackStart; //primarily to control the animation of the attack
 
     public GameObject swordObj;//this is the collider for the sword
     Animator myAnim;
@@ -18,7 +18,7 @@ public class Swordsman : MonoBehaviour {
 
     //health and damage variables
     public float health;
-    bool takeDamage;
+    public bool takeDamage;
     [Tooltip("How long until the body disappears")]
     public float decayTimer;
     [Tooltip("How long until takes damage again")]
@@ -100,7 +100,7 @@ public class Swordsman : MonoBehaviour {
         {
             playerSeen = false;
             attack = false;       
-            Debug.Log("reset");
+     
             //reset the other triggers too
         }
     }
@@ -126,6 +126,8 @@ public class Swordsman : MonoBehaviour {
                 hardFreeze = true;
                 GetComponent<Animator>().SetTrigger("die");
                 StartCoroutine("BodyDecay");
+                takeDamage = false;
+                return;
             }
             GetComponent<Animator>().SetTrigger("damage");
             takeDamage = false;
@@ -134,7 +136,10 @@ public class Swordsman : MonoBehaviour {
 
 
     public void DmgReset(){
+        Debug.Log("dmg reset swordsman");
         takeDamage = true;
+        attack = false;
+        attackStart = false;
     }
 
     public void TriggerFromAnim(string trig){

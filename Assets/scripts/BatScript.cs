@@ -148,8 +148,7 @@ public class BatScript : MonoBehaviour {
     public void FlapSoundRandomizer(AudioClip sound){
 
         if(flap){
-            myAudioSource.PlayOneShot(sound, 0.55f);
-            Debug.Log(gameObject.name + " should flap");
+            myAudioSource.PlayOneShot(sound, 0.95f);           
         }
         flap = !flap;
 
@@ -225,6 +224,14 @@ public class BatScript : MonoBehaviour {
     }
 
     public void Deactivate(){
+        if (summoned)
+        {
+            if(Boss_Summoner.name == "batBoss2")
+            {
+                Boss_Summoner.GetComponent<Boss_Script>().summonCount--;
+                
+            }
+        }
         gameObject.SetActive(false);
     }
 
