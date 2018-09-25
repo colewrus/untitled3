@@ -68,7 +68,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1174942917197638}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.37, y: -5.72, z: 0.17626831}
+  m_LocalPosition: {x: 8.09, y: 0.81, z: -0.28515625}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children:
   - {fileID: 4361090624437818}
@@ -251,13 +251,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
   flyDest: {x: 50.100777, y: -10.602149, z: 0}
-  speed: 1.75
+  speed: 1.8
   attack: 0
   search: 0
-  searchDelay: 3
+  searchDelay: 1
   ActiveSpace: {fileID: 0}
   aggro: 0
   aggroTimer: 1
+  windbackDist: 0.9
   health: 1
   summoned: 0
   Boss_Summoner: {fileID: 0}

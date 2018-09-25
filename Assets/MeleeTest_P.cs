@@ -106,6 +106,7 @@ public class MeleeTest_P : MonoBehaviour {
                 {
                     hitBox.transform.position = new Vector2(transform.position.x + offset.x, transform.position.y + offset.y);
                 }
+                Debug.Log("melee test");
                 hitBox.GetComponent<Melee_Hitbox>().armed = false; //unarm the weapon otherwise enemies will take demanage when you walk past
                 attackLock = false;
                 attackTick = 0;

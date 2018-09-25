@@ -17,15 +17,16 @@ public class BatScript : MonoBehaviour {
 
     Vector3 windBack;
     Vector3 dashDest;
+    public float windbackDist;
 
     public float health;
-    float healthStore;
+    public float healthStore;
     //Random variablies
     [Tooltip("Is this bat part of a boss summoning?")]
     public bool summoned;
     [Tooltip("Provide the boss object so we can decrease the summoned count")]
     public GameObject Boss_Summoner;
-    bool takeDamage;
+    public bool takeDamage;
 
     public float damageResetTimer;
     public bool freeze; //use to hard lock movement
@@ -41,8 +42,8 @@ public class BatScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         flyDest = transform.position;
-        healthStore = health;
-		
+      
+       
 	}
 
     private void Awake()
@@ -50,7 +51,15 @@ public class BatScript : MonoBehaviour {
         takeDamage = true;
         freeze = false;
         myAudioSource = GetComponent<AudioSource>();
+        healthStore = health;
+        Debug.Log(name + " healthstore " + healthStore);
+    }
+
+    private void OnEnable()
+    {
+        Debug.Log("healthstore " + healthStore);
         health = healthStore;
+        takeDamage = true;
     }
 
     // Update is called once per frame
@@ -84,7 +93,7 @@ public class BatScript : MonoBehaviour {
 
             if (pos.magnitude < 0.95f)
             {
-                windBack = transform.position + (Target.transform.position - transform.position).normalized * -1.25f;
+                windBack = transform.position + (Target.transform.position - transform.position).normalized * -windbackDist;
                 dashDest = Target.transform.position;
                 aggro = true;
                 attack = true;

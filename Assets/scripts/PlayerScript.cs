@@ -70,7 +70,7 @@ public class PlayerScript : MonoBehaviour {
     float fadeTime;
     Color fadeColor;
     public bool fadeIn;
-    bool fadeOut;
+    public bool fadeOut;
     float doorFadeOut; //how long does the fade take for each door?
 
     //control the walking sounds
@@ -90,6 +90,8 @@ public class PlayerScript : MonoBehaviour {
 
     public List<AudioClip> swingClips = new List<AudioClip>();
     public AudioSource mySwingSource;
+    [Tooltip("used to track and vary the swing sound")]
+    int swingCount;
 
 
     public float floorCheckTimer;
@@ -129,6 +131,7 @@ public class PlayerScript : MonoBehaviour {
         attackGate = false;
         //Set the offset from the player for the sword
         sword.SetActive(false);
+        swingCount = 0;
 	}
 
 
@@ -137,11 +140,7 @@ public class PlayerScript : MonoBehaviour {
 	void Update () {
         RaycastHit2D hit_S = Physics2D.Raycast(transform.position, new Vector3(0, -0.75f, 0));
 
-        if (Input.GetKey(KeyCode.X))
-        {
-            fadeIn = true;
-            fadeTime = 0;
-        }
+   
 
         FadeControl();
 
@@ -179,7 +178,16 @@ public class PlayerScript : MonoBehaviour {
     {
         attackGate = true;
         swingObj.GetComponent<Animator>().SetTrigger("swing");
-        mySwingSource.PlayOneShot(swingClips[0]);
+        if(swingCount == 0)
+        {
+            mySwingSource.PlayOneShot(swingClips[0]);
+            swingCount++;
+        }else if(swingCount == 1)
+        {
+            mySwingSource.PlayOneShot(swingClips[1]);
+            swingCount = 0;
+        }
+       
         sword.SetActive(true);
         yield return new WaitForSeconds(attackSpeed);
         sword.SetActive(false);
@@ -350,7 +358,7 @@ public class PlayerScript : MonoBehaviour {
         if(collision.transform.tag == "platform") //check to see if we're on platform to enable down jump-through
         {
 
-            Debug.Log(rb.velocity.y);
+           
             if(rb.velocity.y <= 0.1f)
             {
                 onPlatform = true;
@@ -368,6 +376,7 @@ public class PlayerScript : MonoBehaviour {
         if(collision.transform.tag == "key")
         {
             keys.Add(collision.gameObject);
+            GM.instance.PlaySound("key");
             collision.gameObject.SetActive(false);
         }
 
@@ -404,11 +413,12 @@ public class PlayerScript : MonoBehaviour {
     {
         fadeIn = true;
         //play the door sound
-       
+        myAudio.PlayOneShot(EffectsClips[5], 0.85f);
         yield return new WaitForSeconds(fadeModifier);
-        myAudio.PlayOneShot(EffectsClips[5], 1.0f);
+        myAudio.PlayOneShot(EffectsClips[6], 0.85f);
         //play close sound
         transform.position = DoorObj.GetComponent<DoorScript>().dest.position;
+
         
         yield return new WaitForSeconds(fadeModifier/2);
         fadeOut = true;
@@ -466,6 +476,19 @@ public class PlayerScript : MonoBehaviour {
 
         if(collision.transform.tag == "door")
         {
+            //set music based on the rooms
+            if (collision.gameObject.name == "room1-Exit")
+            {
+                GM.instance.PlaySound("alt", true);
+            }
+
+            if (collision.gameObject.name == "r4-exit")
+            {
+                Debug.Log("boss music should play");
+                GM.instance.PlaySound("bubbles", true);
+            }
+
+
             if (collision.gameObject.GetComponent<DoorScript>().activeDoor)
             {
                 fadeIn = true;

@@ -143,7 +143,7 @@ public class Boss_Script : MonoBehaviour {
         }
         else
         {
-            if (destCounter == destMax)
+            if (destCounter == destMax-1)
             {
                 destCounter = 0;
                 float roll = Random.RandomRange(0, 10);
@@ -450,7 +450,7 @@ public class Boss_Script : MonoBehaviour {
 
         if (deathTriggered)
         {
-            if(deathTick < 5.5f)
+            if(deathTick < 2.5f)
             {
                 deathTick += 1 * Time.deltaTime;
             }

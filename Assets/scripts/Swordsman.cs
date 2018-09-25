@@ -122,7 +122,6 @@ public class Swordsman : MonoBehaviour {
         if(takeDamage){
             health -= dmg;
             if(health <= 0){
-                Debug.Log(this.name + " ded");
                 hardFreeze = true;
                 GetComponent<Animator>().SetTrigger("die");
                 StartCoroutine("BodyDecay");
@@ -136,7 +135,7 @@ public class Swordsman : MonoBehaviour {
 
 
     public void DmgReset(){
-        Debug.Log("dmg reset swordsman");
+   
         takeDamage = true;
         attack = false;
         attackStart = false;

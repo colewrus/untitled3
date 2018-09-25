@@ -31,9 +31,12 @@ public class teleportScript : MonoBehaviour {
     }
 
     IEnumerator TP(){
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(2.1f);
         GetComponent<Animator>().SetTrigger("empty");
+        PlayerScript.instance.fadeIn = true;
+        yield return new WaitForSeconds(1f);
         transform.parent.transform.position = dest;
+        PlayerScript.instance.fadeOut = true;
       
         
     }

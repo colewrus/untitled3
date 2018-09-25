@@ -19,6 +19,8 @@ public class Sound
     [HideInInspector]
     public AudioSource source;
     public bool isPlaying;
+    [Tooltip("Is this looped for music or not for SFX")]
+    public bool loop;
 }
 
 
@@ -54,7 +56,8 @@ public class GM : MonoBehaviour {
             s.source.clip = s.clip;
             s.source.volume = s.volume;
             s.source.pitch = s.pitch;
-            s.source.loop = true;
+            if (s.loop)
+                s.source.loop = true;
         }
     }
 
@@ -75,27 +78,72 @@ public class GM : MonoBehaviour {
 
     public void PlaySound(string name)
     {
-        foreach(Sound y in sounds)
-        {
-            if (y.isPlaying)
-            {
-                y.source.Stop();
-                y.isPlaying = false;
-            }
-        }
+  
         Sound s = Array.Find(sounds, sound => sound.name == name);
+       
         s.source.Play();
         s.isPlaying = true;
-
+                
         return;
+    }
+
+    public void PlaySound(string name, bool stop)
+    {
+        if (stop)
+        {
+            foreach (Sound y in sounds)
+            {
+
+                if (y.isPlaying && y.loop)
+                {
+                    StartCoroutine(FadeOut(y.source, 0.9f));
+                   //y.source.Stop();
+                    y.isPlaying = false;
+                }
+
+            }
+        }
+  
+        Sound s = Array.Find(sounds, sound => sound.name == name);
+        //s.source.Play();
+        StartCoroutine(FadeIn(s.source, 0.9f));
+            
+        s.isPlaying = true;
+        return;
+    }
+
+
+    public IEnumerator FadeOut(AudioSource source, float fadeTime)
+    {
+        float startVolume = source.volume;
+    
+        while(source.volume > 0)
+        {
+            source.volume -= startVolume * Time.deltaTime / fadeTime;
+          
+            yield return null;
+        }
+        source.Stop();
+
+    }
+
+
+    public IEnumerator FadeIn(AudioSource source, float fadeTime)
+    {
+        float startVolume = 0.1f;
+        source.Play();
+        while (source.volume < 1)
+        {
+            source.volume += startVolume * Time.deltaTime / fadeTime;
+            
+            yield return null;
+        }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            PlaySound("bubbles");
-        }
+     
+
     }
 
     public GameObject GetBullets()
