@@ -170,20 +170,30 @@ public class PlayerScript : MonoBehaviour {
             {
                 StartCoroutine("Attack");
             }
-            
         }
 	}
 
     IEnumerator Attack()
     {
         attackGate = true;
-        swingObj.GetComponent<Animator>().SetTrigger("swing");
+     
+        //swingObj.GetComponent<Animator>().SetTrigger("swing");
         if(swingCount == 0)
         {
             mySwingSource.PlayOneShot(swingClips[0]);
             swingCount++;
-        }else if(swingCount == 1)
+            GetComponent<Animator>().SetTrigger("attack");
+        }
+        else if(swingCount == 1)
         {
+            if (!floored)
+            {
+                GetComponent<Animator>().SetTrigger("jattack2");
+            }
+            else
+            {
+                GetComponent<Animator>().SetTrigger("attack");
+            }
             mySwingSource.PlayOneShot(swingClips[1]);
             swingCount = 0;
         }
