@@ -12,6 +12,11 @@ public class T_mobileMovement : MonoBehaviour {
     private float height;
 
     public float speed;
+    float jumpMin; //minimum swipe distance to jump
+
+    float tapTimer;
+    public float swingTimer;
+
     Vector2 deltaSwipe;
     bool menu;
     public GameObject debugPanel;
@@ -51,38 +56,50 @@ public class T_mobileMovement : MonoBehaviour {
         if(Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-
+            tapTimer += 1 * Time.deltaTime;
             // Move the cube if the screen has the finger moving.
             if (touch.phase == TouchPhase.Moved)
             {
                 Vector2 pos = touch.position;
-           
 
-                int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;          
+                //go ahead and move
+                if(tapTimer > 0.5f)
+                {
+                    int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;
 
-        
-                pos.x = (pos.x - width) / width;
-                pos.y = (pos.y - height) / height;
-                position = new Vector3(pos.x, pos.y, 0.0f);
-             
-                    
-                transform.Translate(new Vector3(pos.x*speed, 0, 0) * Time.deltaTime, Space.World);
+
+                    pos.x = (pos.x - width) / width;
+                    pos.y = (pos.y - height) / height;
+                    position = new Vector3(pos.x, pos.y, 0.0f);
+
+
+                    transform.Translate(new Vector3(pos.x * speed, 0, 0) * Time.deltaTime, Space.World);
+                }
+
+
             }
 
             if(touch.phase == TouchPhase.Ended)
             {
 
-                
+               if(tapTimer < swingTimer)
+                {
+                    Debug.Log("swing");
+                }
+
                 Vector3 worldRelease = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 0));
                 float yDist = Vector2.Distance(new Vector3(0,transform.position.y, 0),new Vector3(0,worldRelease.y, 0));
-                Debug.Log(worldRelease);
+                
                 deltaSwipe = touch.deltaPosition;
-                if(yDist > speed)
+
+                
+                if(yDist > jumpMin)
                 {
                     gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up*5, ForceMode2D.Impulse);
                 }
-                //Debug.Log("deltaY " + yDist);
-                //Debug.Log("delta: " + deltaSwipe);
+
+                tapTimer = 0;
+
             }
         }
 		
@@ -105,6 +122,11 @@ public class T_mobileMovement : MonoBehaviour {
     public void setSpeed(InputField field)        
     {
         speed = float.Parse(field.text);
+    }
+
+    public void setJump(InputField field)
+    {
+        jumpMin = float.Parse(field.text);
     }
 
 }
