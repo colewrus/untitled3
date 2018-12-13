@@ -12,7 +12,8 @@ public class T_mobileMovement : MonoBehaviour {
     private float height;
 
     public float speed;
-    float jumpMin; //minimum swipe distance to jump
+    public float jumpMin; //minimum swipe distance to jump
+
 
     float tapTimer;
     public float swingTimer;
@@ -63,7 +64,7 @@ public class T_mobileMovement : MonoBehaviour {
                 Vector2 pos = touch.position;
 
                 //go ahead and move
-                if(tapTimer > 0.5f)
+                if(tapTimer > swingTimer*2)
                 {
                     int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;
 
@@ -127,6 +128,17 @@ public class T_mobileMovement : MonoBehaviour {
     public void setJump(InputField field)
     {
         jumpMin = float.Parse(field.text);
+    }
+
+
+    public void setTimer(InputField field)
+    {
+        swingTimer = float.Parse(field.text);
+    }
+
+    public void ResetScene()
+    {
+        Application.LoadLevel(Application.loadedLevel);
     }
 
 }
