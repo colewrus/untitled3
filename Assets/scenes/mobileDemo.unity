@@ -1212,6 +1212,7 @@ GameObject:
   - component: {fileID: 1394359668}
   - component: {fileID: 1394359669}
   - component: {fileID: 1394359670}
+  - component: {fileID: 1394359671}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -1329,6 +1330,24 @@ MonoBehaviour:
   jumpMin: 3
   swingTimer: 0.15
   debugPanel: {fileID: 1698892588}
+--- !u!95 &1394359671
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1394359665}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 33a1e7cb8d11aba43a337e3860fa5eb0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1414540707
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,7 +1728,7 @@ GameObject:
   - component: {fileID: 1838539567}
   m_Layer: 0
   m_Name: floor
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

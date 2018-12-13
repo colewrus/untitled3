@@ -14,6 +14,7 @@ public class T_mobileMovement : MonoBehaviour {
     public float speed;
     public float jumpMin; //minimum swipe distance to jump
 
+    Animator anim; 
 
     float tapTimer;
     public float swingTimer;
@@ -48,6 +49,7 @@ public class T_mobileMovement : MonoBehaviour {
     // Use this for initialization
     void Start () {
         Debug.Log("Init");
+        anim = gameObject.GetComponent<Animator>();
 		
 	}
 	
@@ -58,6 +60,19 @@ public class T_mobileMovement : MonoBehaviour {
         {
             Touch touch = Input.GetTouch(0);
             tapTimer += 1 * Time.deltaTime;
+
+
+            
+
+            if(Camera.main.ScreenToWorldPoint(touch.position).x < transform.position.x)
+            {
+                gameObject.GetComponent<SpriteRenderer>().flipX = true;
+            }else
+            {
+                gameObject.GetComponent<SpriteRenderer>().flipX = false;
+            }
+
+
             // Move the cube if the screen has the finger moving.
             if (touch.phase == TouchPhase.Moved)
             {
@@ -86,6 +101,7 @@ public class T_mobileMovement : MonoBehaviour {
                if(tapTimer < swingTimer)
                 {
                     Debug.Log("swing");
+                    anim.SetTrigger("attack");
                 }
 
                 Vector3 worldRelease = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 0));
@@ -93,10 +109,13 @@ public class T_mobileMovement : MonoBehaviour {
                 
                 deltaSwipe = touch.deltaPosition;
 
-                
+                //do a jump
                 if(yDist > jumpMin)
                 {
                     gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up*5, ForceMode2D.Impulse);
+                    anim.SetTrigger("jump");
+                    anim.SetBool("floored", false);
+                        
                 }
 
                 tapTimer = 0;
@@ -106,6 +125,15 @@ public class T_mobileMovement : MonoBehaviour {
 		
 	}
 
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.transform.tag == "floor")
+        {
+            Debug.Log("ground");
+            anim.SetBool("floored", true);
+        }
+    }
 
     public void menuToggle()
     {
