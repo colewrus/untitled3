@@ -49,7 +49,7 @@ public class Swordsman : MonoBehaviour {
                 //ok but limit the y movement
                 transform.position += (target.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime;
                 Vector3 pos = (target.transform.position - transform.position);
-
+                Debug.Log(pos.magnitude);
                 if (pos.x > 0)
                 {
                     transform.eulerAngles = new Vector3(0, 180, 0);

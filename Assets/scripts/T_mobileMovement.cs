@@ -6,15 +6,25 @@ using UnityEngine.UI;
 
 public class T_mobileMovement : MonoBehaviour {
 
+    //GUI
+    public GUIStyle skin;
 
     private Vector3 position;
     private float width;
     private float height;
 
+    //Movement
     public float speed;
     public float jumpMin; //minimum swipe distance to jump
+    public float jumpPower;
 
-    Animator anim; 
+
+    [Range(0.0f, 15.0f)]
+    public float jumpStopDrag;
+
+    Animator anim;
+
+    Rigidbody2D rb;
 
     float tapTimer;
     public float swingTimer;
@@ -43,6 +53,17 @@ public class T_mobileMovement : MonoBehaviour {
         GUI.Label(new Rect(20, 20, width, height * 0.25f),
             "x = " + position.x.ToString("f2") +
             ", y = " + position.y.ToString("f2"));
+
+        GUI.skin.horizontalSlider.fixedHeight = (int)(Screen.height / 25.0f);
+        GUI.skin.horizontalSliderThumb.fixedHeight = (int)(Screen.height / 25.0f);
+        GUI.skin.horizontalSliderThumb.fixedWidth = (int)(Screen.height / 25.0f);
+        if (menu)
+        {
+            jumpStopDrag = GUI.HorizontalSlider(new Rect(120, Screen.height - ((Screen.height / 20.0f)) , width, height * 0.25f), jumpStopDrag, 0, 15);
+            jumpPower = GUI.HorizontalSlider(new Rect(120, Screen.height - (2*(Screen.height / 20.0f)), width, height * 0.25f), jumpPower, 0, 15);
+
+        }
+            
     }
 
 
@@ -50,7 +71,7 @@ public class T_mobileMovement : MonoBehaviour {
     void Start () {
         Debug.Log("Init");
         anim = gameObject.GetComponent<Animator>();
-		
+        rb = gameObject.GetComponent<Rigidbody2D>();
 	}
 	
 	// Update is called once per frame
@@ -87,6 +108,7 @@ public class T_mobileMovement : MonoBehaviour {
                     pos.x = (pos.x - width) / width;
                     pos.y = (pos.y - height) / height;
                     position = new Vector3(pos.x, pos.y, 0.0f);
+                    rb.velocity = new Vector3((float)direction * speed, rb.velocity.y, 0);
 
 
                     transform.Translate(new Vector3(pos.x * speed, 0, 0) * Time.deltaTime, Space.World);
@@ -112,9 +134,10 @@ public class T_mobileMovement : MonoBehaviour {
                 //do a jump
                 if(yDist > jumpMin)
                 {
-                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up*5, ForceMode2D.Impulse);
+                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up*jumpPower, ForceMode2D.Impulse);
                     anim.SetTrigger("jump");
                     anim.SetBool("floored", false);
+                    rb.velocity = new Vector2(jumpStopDrag, rb.velocity.y);
                         
                 }
 
