@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class T_mobileMovement : MonoBehaviour {
 
-    //GUI
-    public GUIStyle skin;
+
 
     private Vector3 position;
     private float width;
@@ -17,24 +16,35 @@ public class T_mobileMovement : MonoBehaviour {
     public float speed;
     public float jumpMin; //minimum swipe distance to jump
     public float jumpPower;
-
+    Vector2 startPos;
 
     [Range(0.0f, 15.0f)]
     public float jumpStopDrag;
+    bool jump;
 
     Animator anim;
 
     Rigidbody2D rb;
 
+  
     float tapTimer;
+
+    [Header("Attack Variables")]
+    //Attack vars
     public float swingTimer;
+    public GameObject swordHitBox;
 
     Vector2 deltaSwipe;
     bool menu;
     public GameObject debugPanel;
 
+    //PC controls
+    float horiz;
+
     void Awake()
     {
+       
+        
         width = (float)Screen.width / 2.0f;
         height = (float)Screen.height / 2.0f;
 
@@ -42,17 +52,15 @@ public class T_mobileMovement : MonoBehaviour {
         position = new Vector3(0.0f, 0.0f, 0.0f);
         menu = false;
         debugPanel.SetActive(false);
+        swordHitBox.SetActive(false);
+        jump = false;
         
     }
 
     void OnGUI()
     {
         // Compute a fontSize based on the size of the screen width.
-        GUI.skin.label.fontSize = (int)(Screen.width / 25.0f);
-
-        GUI.Label(new Rect(20, 20, width, height * 0.25f),
-            "x = " + position.x.ToString("f2") +
-            ", y = " + position.y.ToString("f2"));
+    
 
         GUI.skin.horizontalSlider.fixedHeight = (int)(Screen.height / 25.0f);
         GUI.skin.horizontalSliderThumb.fixedHeight = (int)(Screen.height / 25.0f);
@@ -75,76 +83,10 @@ public class T_mobileMovement : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
-        if(Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            tapTimer += 1 * Time.deltaTime;
-
-
-            
-
-            if(Camera.main.ScreenToWorldPoint(touch.position).x < transform.position.x)
-            {
-                gameObject.GetComponent<SpriteRenderer>().flipX = true;
-            }else
-            {
-                gameObject.GetComponent<SpriteRenderer>().flipX = false;
-            }
-
-
-            // Move the cube if the screen has the finger moving.
-            if (touch.phase == TouchPhase.Moved)
-            {
-                Vector2 pos = touch.position;
-
-                //go ahead and move
-                if(tapTimer > swingTimer*2)
-                {
-                    int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;
-
-
-                    pos.x = (pos.x - width) / width;
-                    pos.y = (pos.y - height) / height;
-                    position = new Vector3(pos.x, pos.y, 0.0f);
-                    rb.velocity = new Vector3((float)direction * speed, rb.velocity.y, 0);
-
-
-                    transform.Translate(new Vector3(pos.x * speed, 0, 0) * Time.deltaTime, Space.World);
-                }
-
-
-            }
-
-            if(touch.phase == TouchPhase.Ended)
-            {
-
-               if(tapTimer < swingTimer)
-                {
-                    Debug.Log("swing");
-                    anim.SetTrigger("attack");
-                }
-
-                Vector3 worldRelease = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 0));
-                float yDist = Vector2.Distance(new Vector3(0,transform.position.y, 0),new Vector3(0,worldRelease.y, 0));
-                
-                deltaSwipe = touch.deltaPosition;
-
-                //do a jump
-                if(yDist > jumpMin)
-                {
-                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up*jumpPower, ForceMode2D.Impulse);
-                    anim.SetTrigger("jump");
-                    anim.SetBool("floored", false);
-                    rb.velocity = new Vector2(jumpStopDrag, rb.velocity.y);
-                        
-                }
-
-                tapTimer = 0;
-
-            }
-        }
+        MobileMovement();
+        PCMovement();
 		
 	}
 
@@ -153,11 +95,163 @@ public class T_mobileMovement : MonoBehaviour {
     {
         if(collision.transform.tag == "floor")
         {
-            Debug.Log("ground");
             anim.SetBool("floored", true);
+        }
+
+        if(collision.transform.tag == "platform" && rb.velocity.y == 0)
+        {
+            anim.SetBool("floored", true);
+        }
+
+    }
+
+    void PCMovement()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+            anim.SetTrigger("jump");
+            anim.SetBool("floored", false);
+        }
+
+        horiz = Input.GetAxis("Horizontal");
+
+        if(horiz < 0)
+        {
+            transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+        else
+        {
+            transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+
+        rb.velocity = new Vector2(horiz * speed, rb.velocity.y);
+        if (Input.GetMouseButtonDown(0))
+        {
+            swordHitBox.SetActive(true);
+            anim.SetTrigger("attack");
         }
     }
 
+
+    //Movement
+    void MobileMovement()
+    {
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            tapTimer += 1 * Time.deltaTime;
+
+
+
+            if (touch.phase == TouchPhase.Began)
+                startPos = touch.position;
+
+
+            if (Camera.main.ScreenToWorldPoint(touch.position).x < transform.position.x)
+            {
+                //gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+            else
+            {
+                //gameObject.GetComponent<SpriteRenderer>().flipX = false;
+                transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+
+
+
+            Vector2 pos = touch.position;
+
+            //go ahead and move
+            if (tapTimer > swingTimer * 2)
+            {
+                int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;
+
+
+                pos.x = (pos.x - width) / width;
+                pos.y = (pos.y - height) / height;
+                position = new Vector3(pos.x, pos.y, 0.0f);
+
+
+
+                if (!jump)
+                {
+                    float xSpeed = Mathf.Clamp((direction * ((speed / 2) + tapTimer)), -speed, speed);
+                    rb.velocity = new Vector3(xSpeed, rb.velocity.y, 0);
+                }
+                else
+                {
+                    float xSpeed = Mathf.Clamp((direction * ((speed / 2) + tapTimer)), -speed/2, speed/2);
+                }
+
+
+            }
+
+
+
+
+            if (touch.phase == TouchPhase.Ended)
+            {
+
+                Attack(pos);
+                
+
+                float yDist = touch.position.y - startPos.y;
+                Vector3 worldRelease = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, 0));
+                //float yDist = Vector2.Distance(new Vector3(0,transform.position.y, 0),new Vector3(0,worldRelease.y, 0));
+
+                deltaSwipe = touch.deltaPosition;
+
+                //do a jump
+                if (yDist > jumpMin)
+                {
+                    rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
+                    anim.SetTrigger("jump");
+                    anim.SetBool("floored", false);
+
+                }
+
+                tapTimer = 0;
+
+            }
+        }
+
+    }
+
+
+
+    //attack functions
+    void Attack(Vector2 p)
+    {
+
+        if (tapTimer < swingTimer)
+        {
+            Vector2 localTap = Camera.main.ScreenToWorldPoint(p);
+
+            if (localTap.y > transform.position.y)
+            {
+                    
+            } else if (localTap.y < transform.position.y)
+            {
+               
+            }
+            swordHitBox.SetActive(true);
+
+
+            anim.SetTrigger("attack");
+        }
+    }
+
+    public void DeactivateHitbox()
+    {
+        swordHitBox.SetActive(false);
+    }
+
+
+
+    //Test Controls
     public void menuToggle()
     {
         menu = !menu;
@@ -178,7 +272,7 @@ public class T_mobileMovement : MonoBehaviour {
 
     public void setJump(InputField field)
     {
-        jumpMin = float.Parse(field.text);
+        jumpPower = float.Parse(field.text);
     }
 
 

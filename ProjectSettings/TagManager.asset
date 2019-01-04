@@ -19,6 +19,8 @@ TagManager:
   - swordman
   - blob
   - floor
+  - coin
+  - heart
   layers:
   - Default
   - TransparentFX

@@ -1,19 +1,17 @@
 fileFormatVersion: 2
-guid: ef6b33eca28f9c5488e94c80d7ce191c
+guid: 978bee72724a84ab5a22353049e1e092
 TextureImporter:
   fileIDToRecycleName:
-    21300000: man_0
-    21300002: man_1
-    21300004: man_2
-    21300006: man_3
-    21300008: man_4
-    21300010: man_5
-    21300012: man_6
-    21300014: man_7
-    21300016: man_8
-    21300018: man_9
+    21300000: Coin_0
+    21300002: Coin_1
+    21300004: Coin_2
+    21300006: Coin_3
+    21300008: Coin_4
+    21300010: Coin_5
+    21300012: Coin_6
+    21300014: Coin_7
   externalObjects: {}
-  serializedVersion: 5
+  serializedVersion: 7
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -31,6 +29,8 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -41,7 +41,7 @@ TextureImporter:
     serializedVersion: 2
     filterMode: 0
     aniso: -1
-    mipBias: -1
+    mipBias: -100
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -53,7 +53,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -125,13 +125,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: man_0
+      name: Coin_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 15
-        width: 10
-        height: 11
+        x: 0
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -139,19 +139,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bfbfbc4730d11cd478ca2a99bdd64ff0
+      spriteID: b9faf4f608cc44eaaaf192c39635c0c2
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_1
+      name: Coin_1
       rect:
         serializedVersion: 2
-        x: 14
-        y: 14
-        width: 11
-        height: 11
+        x: 32
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -159,19 +159,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47b567136388405478ea23039bdd3f0d
+      spriteID: bd64e304c41a64a3bb112e8705a93e59
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_2
+      name: Coin_2
       rect:
         serializedVersion: 2
-        x: 28
-        y: 14
-        width: 10
-        height: 13
+        x: 64
+        y: 64
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,19 +179,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df088ca64b430e341ae8b39aa3a6d907
+      spriteID: dd9fad3947dd84386853ed85b5f9b93b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_3
+      name: Coin_3
       rect:
         serializedVersion: 2
-        x: 45
-        y: 14
-        width: 10
-        height: 13
+        x: 0
+        y: 32
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -199,19 +199,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8a2a96f60bc0fb438b4c3870c227f0b
+      spriteID: f7919a551aa584252a84256e6113df4b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_4
+      name: Coin_4
       rect:
         serializedVersion: 2
-        x: 58
-        y: 14
-        width: 11
-        height: 11
+        x: 32
+        y: 32
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -219,19 +219,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 968f6b59b3d1cb94e846102ec9ba1ca0
+      spriteID: 79b9647feb0cd4d2992a094323cab4fa
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_5
+      name: Coin_5
       rect:
         serializedVersion: 2
-        x: 72
-        y: 15
-        width: 10
-        height: 11
+        x: 64
+        y: 32
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -239,19 +239,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4ed413ebce9bf904eb4bc1aa7fca9651
+      spriteID: 4bc4dc806f0b845808353afb5b69a5b3
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_6
+      name: Coin_6
       rect:
         serializedVersion: 2
-        x: 1
-        y: 1
-        width: 10
-        height: 11
+        x: 0
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -259,19 +259,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d4297b638e9c7404f8ebc0b92de3b7bf
+      spriteID: 75eb686c487784b418d5e5b3b9fbd8de
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: man_7
+      name: Coin_7
       rect:
         serializedVersion: 2
-        x: 12
-        y: 1
-        width: 10
-        height: 12
+        x: 32
+        y: 0
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -279,47 +279,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa5b171a3cc84f7498884e07d3a8e940
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: man_8
-      rect:
-        serializedVersion: 2
-        x: 46
-        y: 1
-        width: 10
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 105f3adf41e0a1f4dae9b07b2d1bc61a
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: man_9
-      rect:
-        serializedVersion: 2
-        x: 57
-        y: 1
-        width: 10
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 451bb7e839fb12040a275516bdac5ac5
+      spriteID: d6bc04232c4dd4259a1968d248b0cad6
       vertices: []
       indices: 
       edges: []
@@ -327,12 +287,14 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: e53895b80251a5c46a37be5a69049287
+    spriteID: 3a2424eaf77fa412583aadf56cedf256
     vertices: []
     indices: 
     edges: []
     weights: []
   spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

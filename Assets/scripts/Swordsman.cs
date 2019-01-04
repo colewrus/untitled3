@@ -23,7 +23,8 @@ public class Swordsman : MonoBehaviour {
     public float decayTimer;
     [Tooltip("How long until takes damage again")]
     public float dmgReset;
-
+    [Tooltip("How long until sword is recovered")]
+    public float swingReset;
 
     public bool hardFreeze;
 
@@ -49,7 +50,7 @@ public class Swordsman : MonoBehaviour {
                 //ok but limit the y movement
                 transform.position += (target.transform.position - transform.position).normalized * moveSpeed * Time.deltaTime;
                 Vector3 pos = (target.transform.position - transform.position);
-                Debug.Log(pos.magnitude);
+
                 if (pos.x > 0)
                 {
                     transform.eulerAngles = new Vector3(0, 180, 0);
@@ -151,7 +152,23 @@ public class Swordsman : MonoBehaviour {
     }
 
     public void DeActivate(){
+
+        if (m_PlayerActions.instance.health < 5)
+        {
+            Debug.Log("Should spawn a heart");
+            GameObject h = (GameObject)Instantiate(m_GM.instance.heart, transform.position, Quaternion.identity);
+            h.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1), ForceMode2D.Impulse);
+        }
+
         gameObject.SetActive(false);
+    }
+
+    public IEnumerator PauseSwing()
+    {
+        float animSpeed = GetComponent<Animator>().speed;
+        GetComponent<Animator>().speed = 0;
+        yield return new WaitForSeconds(swingReset);
+        GetComponent<Animator>().speed = animSpeed;
     }
 
 }

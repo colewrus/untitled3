@@ -20,6 +20,7 @@ public class Melee_Hitbox : MonoBehaviour
     private void OnEnable()
     {
         armed = true;
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -46,10 +47,9 @@ public class Melee_Hitbox : MonoBehaviour
             }
            
         }
-     
 
     }
-    
+
 
  
 }
