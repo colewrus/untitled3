@@ -25,8 +25,11 @@ public class Melee_Hitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
+
         if (armed)
         {
+            Debug.Log("some kind of hit");
             if (collision.tag == "bat")
             {
                 collision.transform.parent.GetComponent<BatScript>().HitReg(Damage);
@@ -51,5 +54,5 @@ public class Melee_Hitbox : MonoBehaviour
     }
 
 
- 
+
 }

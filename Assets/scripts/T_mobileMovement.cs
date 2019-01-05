@@ -32,7 +32,8 @@ public class T_mobileMovement : MonoBehaviour {
     [Header("Attack Variables")]
     //Attack vars
     public float swingTimer;
-    public GameObject swordHitBox;
+    //public GameObject swordHitBox;
+    public LayerMask playerMask;
 
     Vector2 deltaSwipe;
     bool menu;
@@ -52,7 +53,7 @@ public class T_mobileMovement : MonoBehaviour {
         position = new Vector3(0.0f, 0.0f, 0.0f);
         menu = false;
         debugPanel.SetActive(false);
-        swordHitBox.SetActive(false);
+      //  swordHitBox.SetActive(false);
         jump = false;
         
     }
@@ -128,7 +129,8 @@ public class T_mobileMovement : MonoBehaviour {
         rb.velocity = new Vector2(horiz * speed, rb.velocity.y);
         if (Input.GetMouseButtonDown(0))
         {
-            swordHitBox.SetActive(true);
+            Attack((Vector2)Input.mousePosition);
+            //swordHitBox.SetActive(true);
             anim.SetTrigger("attack");
         }
     }
@@ -225,11 +227,26 @@ public class T_mobileMovement : MonoBehaviour {
     //attack functions
     void Attack(Vector2 p)
     {
+        Vector2 newP = Camera.main.ScreenToWorldPoint(p) - transform.position;
+      
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, newP, 100, playerMask);
+        RaycastHit2D sHit = Physics2D.Raycast(transform.position + transform.forward, Vector2.right * 150);
+
+        Debug.DrawRay(transform.position, Vector2.right*100, Color.blue, 2.0f);
+        Debug.DrawRay(transform.position, newP, Color.red, 2.5f);
+
+        if(hit.collider != null)
+        {
+            Debug.Log(hit.collider.gameObject.name);
+        }
+
+
+
 
         if (tapTimer < swingTimer)
         {
             Vector2 localTap = Camera.main.ScreenToWorldPoint(p);
-
+           // swordHitBox.GetComponent<Melee_Hitbox>().armed = true;
             if (localTap.y > transform.position.y)
             {
                     
@@ -237,7 +254,7 @@ public class T_mobileMovement : MonoBehaviour {
             {
                
             }
-            swordHitBox.SetActive(true);
+           // swordHitBox.SetActive(true);
 
 
             anim.SetTrigger("attack");
@@ -246,7 +263,7 @@ public class T_mobileMovement : MonoBehaviour {
 
     public void DeactivateHitbox()
     {
-        swordHitBox.SetActive(false);
+        //swordHitBox.SetActive(false);
     }
 
 

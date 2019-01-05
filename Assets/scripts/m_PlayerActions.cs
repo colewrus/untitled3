@@ -25,7 +25,10 @@ public class m_PlayerActions : MonoBehaviour {
     [Tooltip("0 is half heart, 1 is full heart")]
     public Sprite[] heartSprites; //0 is half heart, 1 is full heart;
 
-
+    //Attack Variables
+    RaycastHit hit;
+    RaycastHit2D hit2d;
+    
 
     //Money
     public int coins;
@@ -80,6 +83,11 @@ public class m_PlayerActions : MonoBehaviour {
             }
           
         }
+
+    }
+
+    void RaycastAttack()
+    {
 
     }
 

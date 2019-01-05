@@ -19,6 +19,7 @@ public class Swordsman : MonoBehaviour {
     //health and damage variables
     public float health;
     public bool takeDamage;
+    public GameObject healthbar;
     [Tooltip("How long until the body disappears")]
     public float decayTimer;
     [Tooltip("How long until takes damage again")]
