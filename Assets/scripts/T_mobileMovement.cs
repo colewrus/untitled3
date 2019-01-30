@@ -27,13 +27,16 @@ public class T_mobileMovement : MonoBehaviour {
     Rigidbody2D rb;
 
   
-    float tapTimer;
+    public float tapTimer;
 
     [Header("Attack Variables")]
     //Attack vars
     public float swingTimer;
     //public GameObject swordHitBox;
     public LayerMask playerMask;
+    [Tooltip("Sets how far the raycast for the attack shoots")]
+    public float attackRange;
+    public float damage;
 
     Vector2 deltaSwipe;
     bool menu;
@@ -86,10 +89,15 @@ public class T_mobileMovement : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        MobileMovement();
+
+#if UNITY_STANDALONE || UNITY_WEBPLAYER
         PCMovement();
-		
-	}
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+        MobileMovement();
+
+#endif
+
+    }
 
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -177,7 +185,7 @@ public class T_mobileMovement : MonoBehaviour {
             Vector2 pos = touch.position;
 
             //go ahead and move
-            if (tapTimer > swingTimer * 2)
+            if (tapTimer > swingTimer)
             {
            
                 int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;
@@ -194,10 +202,8 @@ public class T_mobileMovement : MonoBehaviour {
                 {
                     //float xSpeed = Mathf.Clamp((direction * ((speed / 2) + tapTimer)), -speed, speed);
                    
-                    float xSpeed = Mathf.Clamp(direction * speed, -speed, speed);
-                    Debug.Log("Xspeed " + xSpeed + " veloctiy should be " + rb.velocity);
-
-                   rb.velocity = new Vector3(xSpeed, rb.velocity.y, 0);
+                    float xSpeed = Mathf.Clamp(direction * speed, -speed, speed);              
+                    rb.velocity = new Vector3(xSpeed, rb.velocity.y, 0);
                 }
                 else
                 {
@@ -212,8 +218,8 @@ public class T_mobileMovement : MonoBehaviour {
 
             if (touch.phase == TouchPhase.Ended)
             {
-
-                Attack(pos);
+                
+                Attack(touch.position);
                 
 
                 float yDist = touch.position.y - startPos.y;
@@ -245,11 +251,10 @@ public class T_mobileMovement : MonoBehaviour {
     {
         Vector2 newP = Camera.main.ScreenToWorldPoint(p) - transform.position;
       
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, newP, 100, playerMask);
-        RaycastHit2D sHit = Physics2D.Raycast(transform.position + transform.forward, Vector2.right * 150);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, newP, attackRange, playerMask);
 
-        Debug.DrawRay(transform.position, Vector2.right*100, Color.blue, 2.0f);
-        Debug.DrawRay(transform.position, newP, Color.red, 2.5f);
+        Debug.DrawRay(transform.position, newP, Color.red, attackRange);
+        
 
         if(hit.collider != null)
         {
@@ -262,16 +267,12 @@ public class T_mobileMovement : MonoBehaviour {
         if (tapTimer < swingTimer)
         {
             Vector2 localTap = Camera.main.ScreenToWorldPoint(p);
-           // swordHitBox.GetComponent<Melee_Hitbox>().armed = true;
-            if (localTap.y > transform.position.y)
+     
+           if(hit.collider.tag == "swordman")
             {
-                    
-            } else if (localTap.y < transform.position.y)
-            {
-               
+                Debug.Log("hit the swordsman proper");
+                hit.collider.transform.GetComponentInParent<Swordsman>().HitReg(damage);
             }
-           // swordHitBox.SetActive(true);
-
 
             anim.SetTrigger("attack");
         }

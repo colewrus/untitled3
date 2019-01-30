@@ -18,6 +18,7 @@ public class Swordsman : MonoBehaviour {
 
     //health and damage variables
     public float health;
+    float maxHealth;
     public bool takeDamage;
     public GameObject healthbar;
     [Tooltip("How long until the body disappears")]
@@ -35,6 +36,7 @@ public class Swordsman : MonoBehaviour {
         attack = false;
         myAnim = this.GetComponent<Animator>();
         swordObj.SetActive(false);
+        maxHealth = health;
 	}
 
     private void Awake()
@@ -124,14 +126,17 @@ public class Swordsman : MonoBehaviour {
         if(takeDamage){
             health -= dmg;
             if(health <= 0){
+                healthbar.transform.localScale = new Vector3(0, 0, 0);
                 hardFreeze = true;
                 GetComponent<Animator>().SetTrigger("die");
                 StartCoroutine("BodyDecay");
                 takeDamage = false;
                 return;
             }
-            GetComponent<Animator>().SetTrigger("damage");
-            takeDamage = false;
+
+
+            healthbar.transform.localScale = new Vector3(healthbar.transform.localScale.x * (health / maxHealth), healthbar.transform.localScale.y, healthbar.transform.localScale.z);
+            //takeDamage = false;
         }
     }
 

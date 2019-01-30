@@ -3043,14 +3043,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a88d67bd412ffbb44bb7acc20618196e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 17
+  speed: 6
   jumpMin: 100
-  jumpPower: 27
+  jumpPower: 8
   jumpStopDrag: 8
+  tapTimer: 0
   swingTimer: 0.25
   playerMask:
     serializedVersion: 2
-    m_Bits: 1025
+    m_Bits: 1024
+  attackRange: 3
+  damage: 1
   debugPanel: {fileID: 1698892588}
 --- !u!95 &1394359671
 Animator:
