@@ -108,11 +108,17 @@ public class T_mobileMovement : MonoBehaviour {
 
     void PCMovement()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space)  && !jump)
         {
+            jump = true;
             rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             anim.SetTrigger("jump");
             anim.SetBool("floored", false);
+        }
+
+        if (anim.GetBool("floored"))
+        {
+            jump = false;
         }
 
         horiz = Input.GetAxis("Horizontal");
@@ -121,9 +127,13 @@ public class T_mobileMovement : MonoBehaviour {
         {
             transform.eulerAngles = new Vector3(0, 180, 0);
         }
-        else
+        else if (horiz > 0)
         {
             transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            transform.eulerAngles = transform.eulerAngles;
         }
 
         rb.velocity = new Vector2(horiz * speed, rb.velocity.y);
@@ -169,19 +179,25 @@ public class T_mobileMovement : MonoBehaviour {
             //go ahead and move
             if (tapTimer > swingTimer * 2)
             {
+           
                 int direction = (pos.x > (Screen.width / 2)) ? 1 : -1;
 
 
                 pos.x = (pos.x - width) / width;
                 pos.y = (pos.y - height) / height;
+               
                 position = new Vector3(pos.x, pos.y, 0.0f);
 
 
 
                 if (!jump)
                 {
-                    float xSpeed = Mathf.Clamp((direction * ((speed / 2) + tapTimer)), -speed, speed);
-                    rb.velocity = new Vector3(xSpeed, rb.velocity.y, 0);
+                    //float xSpeed = Mathf.Clamp((direction * ((speed / 2) + tapTimer)), -speed, speed);
+                   
+                    float xSpeed = Mathf.Clamp(direction * speed, -speed, speed);
+                    Debug.Log("Xspeed " + xSpeed + " veloctiy should be " + rb.velocity);
+
+                   rb.velocity = new Vector3(xSpeed, rb.velocity.y, 0);
                 }
                 else
                 {

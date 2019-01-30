@@ -77,9 +77,14 @@ public class m_PlayerActions : MonoBehaviour {
         if(collision.transform.tag == "heart") {
             if(health < maxHealth)
             {
+                // !!!! need to handle health going over max
                 health++;
                 collision.gameObject.SetActive(false);
                 SetHeartUI();
+            }
+            else
+            {
+
             }
           
         }

@@ -3011,7 +3011,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 1
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -3045,10 +3045,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 17
   jumpMin: 100
-  jumpPower: 5
+  jumpPower: 27
   jumpStopDrag: 8
   swingTimer: 0.25
-  swordHitBox: {fileID: 0}
   playerMask:
     serializedVersion: 2
     m_Bits: 1025
