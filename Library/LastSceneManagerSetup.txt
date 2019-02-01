@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/scenes/mobileDemo.unity
+- path: Assets/scenes/mobileControlTest.unity
   isLoaded: 1
   isActive: 1
