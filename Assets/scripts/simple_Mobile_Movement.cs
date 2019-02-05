@@ -10,9 +10,14 @@ public class simple_Mobile_Movement : MonoBehaviour {
     public float minXdist; //minimum distance to swipe before movement kicks in
     public float minYdist; //minimum distance to swipe for a jump
 
+    
+    Rigidbody2D rb;
+    public float jumpPower;
+    public float moveSpeed;
+
 	// Use this for initialization
 	void Start () {
-		
+        rb = this.GetComponent<Rigidbody2D>();
 	}
 	
 	// Update is called once per frame
@@ -23,20 +28,27 @@ public class simple_Mobile_Movement : MonoBehaviour {
         {
             Touch myTouch = Input.touches[0];
 
-            if(myTouch.phase == TouchPhase.Began)
+            if(myTouch.phase == TouchPhase.Began) //--------------BEGIN
             {
                 startTouch = myTouch.position;
-            }else if(myTouch.phase == TouchPhase.Moved)
+            }else if(myTouch.phase == TouchPhase.Moved) //-----------------MOVED
             {
                 if ((myTouch.position.x - startTouch.x) >= minXdist)
+                {
                     Debug.Log("I should be moving right");
+                    rb.AddForce(new Vector2(1 * moveSpeed, 0));
+                }               
                 else if((myTouch.position.x - startTouch.x) <= -minXdist)
+                {
                     Debug.Log("I should move left");
+                    rb.AddForce(new Vector2(-1*moveSpeed, 0));
+                 
+                }                    
             }
-            else if(myTouch.phase == TouchPhase.Ended){
+            else if(myTouch.phase == TouchPhase.Ended) //-----------------------ENDED
+            {
                 touchEnd = myTouch.position;
-                //Debug.Log("Start Pos " + startTouch);
-                //Debug.Log("End Pos " + touchEnd);
+
                 float x = touchEnd.x - startTouch.x;
                 float y = touchEnd.y - startTouch.y;
 
@@ -44,12 +56,17 @@ public class simple_Mobile_Movement : MonoBehaviour {
                 {
                     //Debug.Log("Jump");
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
-                    Debug.Log(worldRelease);
+                    Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
+                    rb.AddForce(direction * jumpPower, ForceMode2D.Impulse);
+                    Debug.Log("UP " + direction);
 
                 }
                 else if (y <= -minYdist)
                 {
-                   // Debug.Log("Down through");
+                    Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
+                    Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
+                    rb.AddForce(direction * jumpPower, ForceMode2D.Impulse);
+                    Debug.Log("Down " + direction);
                 }
 
                 
