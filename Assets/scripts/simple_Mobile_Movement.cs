@@ -15,9 +15,17 @@ public class simple_Mobile_Movement : MonoBehaviour {
     public float jumpPower;
     public float moveSpeed;
 
+
+    bool move; //Should you be moving?
+    Vector2 dir; //direction for player to move
+
+    [Tooltip("Control the sprite direction flip here?")]
+    public bool flipSprite;
+
 	// Use this for initialization
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
+        move = false;
 	}
 	
 	// Update is called once per frame
@@ -28,6 +36,12 @@ public class simple_Mobile_Movement : MonoBehaviour {
         {
             Touch myTouch = Input.touches[0];
 
+            if (move)
+            {
+                Debug.Log("I should move " + dir);
+                rb.AddForce(dir);
+            }
+
             if(myTouch.phase == TouchPhase.Began) //--------------BEGIN
             {
                 startTouch = myTouch.position;
@@ -35,20 +49,27 @@ public class simple_Mobile_Movement : MonoBehaviour {
             {
                 if ((myTouch.position.x - startTouch.x) >= minXdist)
                 {
-                    Debug.Log("I should be moving right");
-                    rb.AddForce(new Vector2(1 * moveSpeed, 0));
+                   
+                    move = true;
+                    dir = new Vector2(1 * moveSpeed, 0);
+                    if (flipSprite)
+                        this.GetComponent<SpriteRenderer>().flipX = false;
+                  
                 }               
                 else if((myTouch.position.x - startTouch.x) <= -minXdist)
                 {
-                    Debug.Log("I should move left");
-                    rb.AddForce(new Vector2(-1*moveSpeed, 0));
-                 
+                   
+                    move = true;
+                    dir = new Vector2(-1 * moveSpeed, 0);
+                    if (flipSprite)
+                        this.GetComponent<SpriteRenderer>().flipX = true;
+
                 }                    
             }
             else if(myTouch.phase == TouchPhase.Ended) //-----------------------ENDED
             {
                 touchEnd = myTouch.position;
-
+                move = false;
                 float x = touchEnd.x - startTouch.x;
                 float y = touchEnd.y - startTouch.y;
 
