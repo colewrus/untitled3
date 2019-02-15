@@ -14,4 +14,7 @@ public class projectile : ScriptableObject {
     public float speed;
     public float chargeTime; //how long to get the maximum power out of this
 
+    public AudioClip travelSound;
+    public AudioClip contactSound;
+
 }

@@ -54,7 +54,7 @@ public class simpleActions : MonoBehaviour {
                     Debug.Log(Camera.main.ScreenToWorldPoint(c.position));
                 }
                 */
-                Debug.Log(touchOne.position + " | " + touchTwo.position);
+               // Debug.Log(touchOne.position + " | " + touchTwo.position);
 
                 //TAP AND HOLD
                 //works opposite of short tap time, the longer you hold the further towards the destination it will travel;
