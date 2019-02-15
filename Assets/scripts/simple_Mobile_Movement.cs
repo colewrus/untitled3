@@ -37,14 +37,15 @@ public class simple_Mobile_Movement : MonoBehaviour {
             Touch myTouch = Input.touches[0];
 
             if (move)
-            {
-                Debug.Log("I should move " + dir);
-                rb.AddForce(dir);
+            {                
+                rb.velocity = dir;
             }
 
             if(myTouch.phase == TouchPhase.Began) //--------------BEGIN
             {
                 startTouch = myTouch.position;
+                
+
             }else if(myTouch.phase == TouchPhase.Moved) //-----------------MOVED
             {
                 if ((myTouch.position.x - startTouch.x) >= minXdist)
@@ -52,6 +53,7 @@ public class simple_Mobile_Movement : MonoBehaviour {
                    
                     move = true;
                     dir = new Vector2(1 * moveSpeed, 0);
+                    
                     if (flipSprite)
                         this.GetComponent<SpriteRenderer>().flipX = false;
                   
@@ -61,6 +63,7 @@ public class simple_Mobile_Movement : MonoBehaviour {
                    
                     move = true;
                     dir = new Vector2(-1 * moveSpeed, 0);
+                
                     if (flipSprite)
                         this.GetComponent<SpriteRenderer>().flipX = true;
 
@@ -78,16 +81,17 @@ public class simple_Mobile_Movement : MonoBehaviour {
                     //Debug.Log("Jump");
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
                     Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
-                    rb.AddForce(direction * jumpPower, ForceMode2D.Impulse);
-                    Debug.Log("UP " + direction);
+                    direction = new Vector2(Mathf.Clamp(direction.x, -1, 1), direction.y * jumpPower);
+                    rb.AddForce(direction, ForceMode2D.Impulse);
+                    
 
                 }
                 else if (y <= -minYdist)
                 {
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
                     Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
-                    rb.AddForce(direction * jumpPower, ForceMode2D.Impulse);
-                    Debug.Log("Down " + direction);
+                    //rb.AddForce(direction * jumpPower, ForceMode2D.Impulse);
+               
                 }
 
                 

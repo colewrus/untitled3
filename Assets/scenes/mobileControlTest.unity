@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 246317930}
   m_Layer: 0
   m_Name: floor
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -148,13 +148,13 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 15, y: 0.15876831}
+    newSize: {x: 75, y: 0.15876831}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 1
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 15, y: 0.15}
+  m_Size: {x: 75, y: 0.15}
   m_EdgeRadius: 0
 --- !u!212 &246317928
 SpriteRenderer:
@@ -196,7 +196,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 15, y: 0.15876831}
+  m_Size: {x: 75, y: 0.15876831}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 1
   m_WasSpriteAssigned: 1
@@ -209,7 +209,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 246317926}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.74, y: 0.83, z: 0}
+  m_LocalPosition: {x: 5.071, y: 0.83, z: 0}
   m_LocalScale: {x: 0.578125, y: 3.125, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -283,7 +283,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 1.25
+  orthographic size: 3
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -306,7 +306,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 327772019}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.81, y: 1.9, z: -10}
+  m_LocalPosition: {x: 2.17, y: 2.82, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -404,8 +404,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1716911222}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.96, y: 1.4217645, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalPosition: {x: 2.104, y: 2.042, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -456,10 +456,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa44c25e884c5b947ae504664c66025f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minXdist: 50
-  minYdist: 50
-  jumpPower: 1
-  moveSpeed: 1
+  minXdist: 150
+  minYdist: 65
+  jumpPower: 2.4
+  moveSpeed: 2
   flipSprite: 1
 --- !u!114 &1716911229
 MonoBehaviour:
@@ -472,5 +472,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b39b11cb68c7c124089bce2c95249fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackTimer: 1
+  attackTimer: 0.1
+  tapTimer: 0
   rock: {fileID: 1844330150368932, guid: 6cfc9675a97040b47bbdc3d358e2d7b4, type: 2}
+  projectileSpawnGap: 0.2
+  attackGate: 0
+  rockPool: 10
+  Armory:
+  - {fileID: 11400000, guid: 40dcdadc938d3d84db55d0f4d36e6b61, type: 2}
+  - {fileID: 11400000, guid: 48c583999181f3b4bb0d1840dd915e26, type: 2}
+  currentWeapon: 1
