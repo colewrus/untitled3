@@ -46,6 +46,11 @@ public class projectileBehavior : MonoBehaviour {
             }
         }
         */
+
+        if(collision.transform.tag == "enemies")
+        {
+            Debug.Log("hit the bad guy");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

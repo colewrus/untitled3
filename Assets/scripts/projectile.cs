@@ -13,6 +13,8 @@ public class projectile : ScriptableObject {
     public float lifetime;
     public float speed;
     public float chargeTime; //how long to get the maximum power out of this
+    [Tooltip("How long between attacks")]
+    public float cooldown;
 
     public AudioClip travelSound;
     public AudioClip contactSound;

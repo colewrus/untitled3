@@ -14,7 +14,10 @@ public class simple_Mobile_Movement : MonoBehaviour {
     Rigidbody2D rb;
     public float jumpPower;
     public float moveSpeed;
+    public float jumpMin, jumpMax;
 
+    public bool onPlatorm;
+    
 
     bool move; //Should you be moving?
     Vector2 dir; //direction for player to move
@@ -26,6 +29,7 @@ public class simple_Mobile_Movement : MonoBehaviour {
 	void Start () {
         rb = this.GetComponent<Rigidbody2D>();
         move = false;
+        onPlatorm = false;
 	}
 	
 	// Update is called once per frame
@@ -37,20 +41,22 @@ public class simple_Mobile_Movement : MonoBehaviour {
             Touch myTouch = Input.touches[0];
 
             if (move)
-            {                
-                rb.velocity = dir;
+            {
+                rb.velocity = new Vector2(dir.x, rb.velocity.y);
             }
+
+        
 
             if(myTouch.phase == TouchPhase.Began) //--------------BEGIN
             {
-                startTouch = myTouch.position;
-                
+                startTouch = myTouch.position;                
 
-            }else if(myTouch.phase == TouchPhase.Moved) //-----------------MOVED
+            }
+            else if(myTouch.phase == TouchPhase.Moved) //-----------------MOVED
             {
                 if ((myTouch.position.x - startTouch.x) >= minXdist)
                 {
-                   
+                    startTouch = myTouch.position;
                     move = true;
                     dir = new Vector2(1 * moveSpeed, 0);
                     
@@ -60,7 +66,7 @@ public class simple_Mobile_Movement : MonoBehaviour {
                 }               
                 else if((myTouch.position.x - startTouch.x) <= -minXdist)
                 {
-                   
+                    startTouch = myTouch.position;
                     move = true;
                     dir = new Vector2(-1 * moveSpeed, 0);
                 
@@ -81,16 +87,19 @@ public class simple_Mobile_Movement : MonoBehaviour {
                     //Debug.Log("Jump");
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
                     Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
-                    direction = new Vector2(Mathf.Clamp(direction.x, -1, 1), direction.y * jumpPower);
+                    direction = new Vector2(Mathf.Clamp(direction.x, -1, 1), Mathf.Clamp(direction.y * jumpPower, jumpMin, jumpMax));
                     rb.AddForce(direction, ForceMode2D.Impulse);
-                    
-
                 }
                 else if (y <= -minYdist)
                 {
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
                     Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
-                    //rb.AddForce(direction * jumpPower, ForceMode2D.Impulse);
+                    Debug.Log("first step in drop down");
+                    if (this.GetComponent<Collider2D>().IsTouchingLayers(LayerMask.NameToLayer("passThrough"))) ;
+                    {
+                        Debug.Log("could pass through");
+                        
+                    }
                
                 }
 
@@ -99,4 +108,20 @@ public class simple_Mobile_Movement : MonoBehaviour {
         }
 
 	}
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.transform.tag == "platform")
+        {
+            onPlatorm = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "platform")
+        {
+            onPlatorm = false;
+        }
+    }
 }

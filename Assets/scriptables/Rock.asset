@@ -16,4 +16,8 @@ MonoBehaviour:
   damage: 0.5
   range: 5
   lifetime: 3
-  speed: 4
+  speed: 6
+  chargeTime: 0
+  cooldown: 1
+  travelSound: {fileID: 0}
+  contactSound: {fileID: 0}

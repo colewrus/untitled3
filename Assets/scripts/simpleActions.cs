@@ -65,7 +65,7 @@ public class simpleActions : MonoBehaviour {
             tapTimer += 1 * Time.deltaTime;
             if (touch.phase == TouchPhase.Began)
             {
-                attackGate = false;
+                //attackGate = false;
                 tapTimer = 0;
             }
 
@@ -76,7 +76,7 @@ public class simpleActions : MonoBehaviour {
                   
                     if(currentWeapon == 0)
                     {
-                        Debug.Log("should throw the rock");
+                        
                         GameObject thisRock = GetRock();
                         Vector2 tapDir = Camera.main.ScreenToWorldPoint(touch.position);
                         if (thisRock == null)
@@ -96,11 +96,12 @@ public class simpleActions : MonoBehaviour {
 
                         Vector2 throwDir = tapDir - new Vector2(this.transform.position.x, this.transform.position.y);
                         thisRock.GetComponent<Rigidbody2D>().AddForce(throwDir.normalized*Armory[currentWeapon].speed, ForceMode2D.Impulse);
-                        Debug.Log(thisRock.GetComponent<Rigidbody2D>().velocity);
+                        
                     }
 
-                    Debug.Log("attack");
+                    StartCoroutine("CoolDown");
                     attackGate = true;
+                    
 
                 }
               
@@ -110,7 +111,11 @@ public class simpleActions : MonoBehaviour {
 		
 	}
 
-
+    IEnumerator CoolDown()
+    {
+        yield return new WaitForSeconds(Armory[currentWeapon].cooldown);
+        attackGate = false;
+    }
   
 
     public GameObject GetRock()
