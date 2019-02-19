@@ -6,6 +6,7 @@ public class simple_Mobile_Movement : MonoBehaviour {
 
 
     Vector2 startTouch;
+    Vector2 hardstart;
     Vector2 touchEnd;
     public float minXdist; //minimum distance to swipe before movement kicks in
     public float minYdist; //minimum distance to swipe for a jump
@@ -45,11 +46,12 @@ public class simple_Mobile_Movement : MonoBehaviour {
                 rb.velocity = new Vector2(dir.x, rb.velocity.y);
             }
 
-        
+         
 
             if(myTouch.phase == TouchPhase.Began) //--------------BEGIN
             {
-                startTouch = myTouch.position;                
+                startTouch = myTouch.position;
+                hardstart = myTouch.position;
 
             }
             else if(myTouch.phase == TouchPhase.Moved) //-----------------MOVED
@@ -79,35 +81,43 @@ public class simple_Mobile_Movement : MonoBehaviour {
             {
                 touchEnd = myTouch.position;
                 move = false;
-                float x = touchEnd.x - startTouch.x;
-                float y = touchEnd.y - startTouch.y;
+                float x = touchEnd.x - hardstart.x;
+                float y = touchEnd.y - hardstart.y;
 
                 if (y >= minYdist)
                 {
                     //Debug.Log("Jump");
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
                     Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
-                    direction = new Vector2(Mathf.Clamp(direction.x, -1, 1), Mathf.Clamp(direction.y * jumpPower, jumpMin, jumpMax));
+                    
+                    direction = new Vector2(Mathf.Clamp(direction.x, -jumpPower, jumpPower), Mathf.Clamp(direction.y * jumpPower, jumpMin, jumpMax));
                     rb.AddForce(direction, ForceMode2D.Impulse);
+                    
                 }
                 else if (y <= -minYdist)
                 {
                     Vector2 worldRelease = Camera.main.ScreenToWorldPoint(touchEnd);
                     Vector2 direction = worldRelease - new Vector2(transform.position.x, transform.position.y);
                     Debug.Log("first step in drop down");
-                    if (this.GetComponent<Collider2D>().IsTouchingLayers(LayerMask.NameToLayer("passThrough"))) ;
-                    {
-                        Debug.Log("could pass through");
-                        
-                    }
-               
-                }
+                    if (onPlatorm)
+                        this.GetComponent<Collider2D>().isTrigger = true;
 
-                
+                }
+           
+
             }
         }
 
 	}
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.transform.tag == "platform")
+        {
+            
+            this.GetComponent<Collider2D>().isTrigger = false;
+        }
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
