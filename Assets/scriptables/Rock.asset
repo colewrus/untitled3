@@ -18,6 +18,6 @@ MonoBehaviour:
   lifetime: 3
   speed: 6
   chargeTime: 0
-  cooldown: 1
+  cooldown: 0.5
   travelSound: {fileID: 0}
   contactSound: {fileID: 0}
