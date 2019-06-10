@@ -6,16 +6,18 @@ public class JumpTest : MonoBehaviour
 {
 
     Rigidbody2D rb;
-    public float jPower,jTimer;
+    public float jPower,jTimer, moveSpeed, runSpeed;
     public float jumpTick;
     public bool grounded, falling; //Are you touching the ground?
-   
+    float horiz;
+    Animator ani;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         jumpTick = 0;
+        ani = GetComponent<Animator>();
     }
 
 
@@ -25,9 +27,56 @@ public class JumpTest : MonoBehaviour
         if(!falling)
             Jump();
 
+        //_pMove();
+        Move();
 
 
+    }
 
+    void Move()
+    {
+        horiz = Input.GetAxis("Horizontal");
+        if (horiz < 0)
+        {
+            transform.Translate(new Vector3(-moveSpeed, 0, 0)*Time.deltaTime);
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else if (horiz > 0)
+        {
+            transform.Translate(new Vector3(moveSpeed, 0, 0)*Time.deltaTime);
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+
+    }
+
+    //Physics movement
+    void _pMove()
+    {
+        horiz = Input.GetAxis("Horizontal");
+
+        //animation controller
+        if (horiz != 0)
+        {           
+            if (grounded)
+                ani.SetTrigger("run"); //Animation
+        }
+        else
+        {
+            if (grounded)
+                ani.SetTrigger("toIdle"); //animation
+        }
+
+        //Control spriteDirection
+        if (horiz < 0)
+        {
+            rb.AddForce(Vector2.right * -moveSpeed);
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else if (horiz > 0)
+        {
+            rb.AddForce(Vector2.right * moveSpeed);
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
 
 
@@ -38,6 +87,7 @@ public class JumpTest : MonoBehaviour
         {
             if (grounded)
             {
+                ani.SetTrigger("jumpInit"); //animation
                 rb.velocity = new Vector2(0, 0);
                 rb.AddRelativeForce(Vector2.up * jPower, ForceMode2D.Impulse);
                 grounded = false;
@@ -78,6 +128,7 @@ public class JumpTest : MonoBehaviour
     {
         if(collision.transform.tag == "floor")
         {
+            ani.SetTrigger("toIdle"); //animation
             grounded = true;
             falling = false;
             jumpTick = 0;
